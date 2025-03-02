@@ -3,12 +3,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAdvertisements } from '@/hooks/useAd';
 import { IAviso, IValla } from '.';
 import { useState } from 'react';
+import { RefreshControl } from 'react-native'
 
 
 export default function Avisos() {
   const [page, setPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
   const ITEMS_PER_PAGE = 3;
-  const { avisos, loading } = useAdvertisements();
+  const { avisos, loading, fetchData } = useAdvertisements();
 
   const totalPages = Math.ceil(avisos.length / ITEMS_PER_PAGE);
   const paginatedAvisos = avisos.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -136,6 +138,16 @@ export default function Avisos() {
     </TouchableOpacity>
   );
 
+  async function onRefresh() {
+    setRefreshing(true);
+    // Aquí puedes realizar la lógica para actualizar los datos
+    // Por ejemplo, puedes llamar a una función que recupere los datos actualizados
+    // y luego establecer los datos actualizados en el estado
+    // setAvisos(nuevoAvisos);
+    await fetchData();
+    setRefreshing(false);
+  }
+
   return (
     <View style={styles.container}>
       {avisos.length > 0 ? (
@@ -147,6 +159,12 @@ export default function Avisos() {
           contentContainerStyle={styles.listContainer}
           onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }
         />
         {renderDetailsModal()}
         </>

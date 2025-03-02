@@ -34,12 +34,12 @@ export default function Browse() {
 
       try {
         const [vallasResponse, avisosResponse] = await Promise.all([
-          fetch('https://vallas-publicitaria.onrender.com/vallas').then((res) => res.json()),
-          fetch('https://vallas-publicitaria.onrender.com/avisos').then((res) => res.json()),
+          fetch('https://vallas-publicitaria.onrender.com/vallas?page=1&limit=3').then((res) => res.json()),
+          fetch('https://vallas-publicitaria.onrender.com/avisos?page=1&limit=3').then((res) => res.json()),
         ]);
 
-        setVallas(vallasResponse);
-        setAvisos(avisosResponse);
+        setVallas(vallasResponse.items);
+        setAvisos(avisosResponse.items);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
