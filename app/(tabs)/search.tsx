@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import Slider from '@react-native-community/slider'; // Add this import at the top
+
 import {
   View,
   Text,
@@ -184,8 +186,8 @@ export default function Search() {
       </View>
 
       <View style={styles.priceRangeContainer}>
-        <Text style={styles.sectionTitle}>Price Range max: ${priceRange}</Text>
-{/*         <Slider
+        <Text style={styles.sectionTitle}>Precio Maximo: ${priceRange}</Text>
+       <Slider
           style={styles.slider}
           minimumValue={0}
           maximumValue={MAX_PRICE}
@@ -194,7 +196,7 @@ export default function Search() {
           minimumTrackTintColor="#007AFF"
           maximumTrackTintColor="#ddd"
           step={10}
-        /> */}
+        /> 
         <View style={styles.priceLabels}>
           <Text style={styles.priceLabel}>$0</Text>
           <Text style={styles.priceLabel}>${MAX_PRICE}</Text>
@@ -202,8 +204,8 @@ export default function Search() {
       </View>
 
       <View style={styles.priceRangeContainer}>
-        <Text style={styles.sectionTitle}>Price Range Min: ${priceRangeMin}</Text>
-{/*         <Slider
+        <Text style={styles.sectionTitle}>Precio minimo: ${priceRangeMin}</Text>
+      <Slider
           style={styles.slider}
           minimumValue={0}
           maximumValue={MAX_PRICE}
@@ -212,7 +214,7 @@ export default function Search() {
           minimumTrackTintColor="#007AFF"
           maximumTrackTintColor="#ddd"
           step={100}
-        /> */}
+        /> 
         <View style={styles.priceLabels}>
           <Text style={styles.priceLabel}>$0</Text>
         </View>
@@ -287,6 +289,7 @@ const styles = StyleSheet.create({
     color: '#666',
     marginLeft: 4,
   },
+  
   savedDate: {
     fontSize: 12,
     color: '#666',

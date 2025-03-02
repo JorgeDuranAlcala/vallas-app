@@ -1,215 +1,108 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList, ActivityIndicator, Button, Linking } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, ScrollView, Image, Modal, TouchableOpacity, FlatList, ActivityIndicator, Linking } from 'react-native';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { router } from 'expo-router';
-
-const categories = [
-  { id: '1', name: 'Vehicles', icon: 'car-outline' },
-  { id: '2', name: 'Property', icon: 'home-outline' },
-  { id: '3', name: 'Electronics', icon: 'phone-portrait-outline' },
-  { id: '4', name: 'Furniture', icon: 'bed-outline' },
-  { id: '5', name: 'Jobs', icon: 'briefcase-outline' },
-  { id: '6', name: 'Services', icon: 'construct-outline' },
-];
-
-const featuredAds = [
-  {
-    id: '1',
-    title: '2022 Tesla Model 3',
-    price: '$45,000',
-    location: 'San Francisco, CA',
-    image: 'https://images.unsplash.com/photo-1561580125-028ee3bd62eb?w=800&auto=format&fit=crop&q=60',
-  },
-  {
-    id: '2',
-    title: 'Luxury Apartment',
-    price: '$2,500/mo',
-    location: 'New York, NY',
-    image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&auto=format&fit=crop&q=60',
-  },
-  {
-    id: '3',
-    title: 'MacBook Pro M1',
-    price: '$1,200',
-    location: 'Austin, TX',
-    image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&auto=format&fit=crop&q=60',
-  },
-];
+import add from '../../assets/images/add.jpeg';
 
 export interface IValla {
-  id: number
-  nombre: string
-  imagenUrl: string
-  price: number
+  id: number;
+  nombre: string;
+  imagenUrl: string;
+  price: number;
 }
 
 export interface IAviso {
-  id: number
-  tipo: string
-  material: string
-  precio: string
-  descripcion: string
-  fechaCreacion: string
-  imagenUrl: string
+  id: number;
+  tipo: string;
+  material: string;
+  precio: string;
+  descripcion: string;
+  fechaCreacion: string;
+  imagenUrl: string;
 }
 
-
 export default function Browse() {
-
-  const [vallas, setVallas] = useState<IValla[]>([])
-  const [avisos, setAvisos] = useState<IAviso[]>([])
-  const [loading, setLoading] = useState({
-    vallas: false,
-    avisos: false
-  })
+  const [vallas, setVallas] = useState<IValla[]>([]);
+  const [avisos, setAvisos] = useState<IAviso[]>([]);
+  const [loading, setLoading] = useState({ vallas: false, avisos: false });
+  const [selectedValla, setSelectedValla] = useState<IValla | null>(null);
+  const [selectedAviso, setSelectedAviso] = useState<IAviso | null>(null);
+  const [showSplashAd, setShowSplashAd] = useState(true);
 
   useEffect(() => {
     (async () => {
-      setLoading(prev => ({
-        ...prev,
-        vallas: true,
-      }));
-      await fetch('https://vallas-publicitaria.onrender.com/vallas')
-        .then(response => response.json())
-        .then(json => {
-          setVallas(json)
-          console.log(json)
-        })
-        .catch(error => console.error(error))
-        .finally(() =>       setLoading(prev => ({
-          ...prev,
-          vallas: false,
-        })))
+      setLoading({ vallas: true, avisos: true });
 
-        setLoading(prev => ({
-          ...prev,
-          avisos: true,
-        }))
-      await fetch('https://vallas-publicitaria.onrender.com/avisos')
-      .then(response => response.json())
-      .then(json => {
-          setAvisos(json)
-          console.log(json)
-        })
-      .catch(error => console.error(error))
-      .finally(() =>       setLoading(prev => ({
-        ...prev,
-        avisos: false,
-      })))
-    })()
-  }, [])
+      try {
+        const [vallasResponse, avisosResponse] = await Promise.all([
+          fetch('https://vallas-publicitaria.onrender.com/vallas?page=1&limit=3').then((res) => res.json()),
+          fetch('https://vallas-publicitaria.onrender.com/avisos?page=1&limit=3').then((res) => res.json()),
+        ]);
 
-  const renderCategory = ({ item }: {item: any}) => (
-    <TouchableOpacity style={styles.categoryItem}>
-      <View style={styles.categoryIcon}>
-        <Ionicons name={item.icon} size={24} color="#007AFF" />
-      </View>
-      <Text style={styles.categoryName}>{item.name}</Text>
-    </TouchableOpacity>
-  );
+        setVallas(vallasResponse.items);
+        setAvisos(avisosResponse.items);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading({ vallas: false, avisos: false });
+      }
+    })();
+  }, []);
 
-  const renderFeaturedAd = ({ item: {
-    nombre,
-    imagenUrl,
-    price
-  } }: { item: IValla }) => (
-    <TouchableOpacity style={styles.adCard}>
-      <Image source={{ uri: imagenUrl }} style={styles.adImage} />
-      <View style={styles.adInfo}>
-        <Text style={styles.adTitle}>{nombre}</Text>
-        <Text style={styles.adPrice}>{price}</Text>
-        <View style={styles.locationContainer}>
-          <Ionicons name="location-outline" size={16} color="#666" />
-        </View>
+  const renderItem = ({ item, onPress }: { item: IValla | IAviso; onPress: () => void }) => (
+    <TouchableOpacity style={styles.card} onPress={onPress}>
+      <Image source={{ uri: item.imagenUrl }} style={styles.image} />
+      <View style={styles.cardInfo}>
+        <Text style={styles.title}>{'nombre' in item ? item.nombre : item.tipo}</Text>
+        <Text style={styles.price}>${'price' in item ? item.price : item.precio}</Text>
       </View>
     </TouchableOpacity>
   );
 
-  const renderAviso = ({ item: {
-    tipo,
-    material,
-    precio,
-    descripcion,
-    fechaCreacion,
-    imagenUrl
-  } }: { item: IAviso }) => (
-    <TouchableOpacity style={styles.adCard}>
-      <Image source={{ uri: imagenUrl }} style={styles.adImage} />
-      <View style={styles.adInfo}>
-        <Text style={styles.adTitle}>{tipo}</Text>
-        <Text style={styles.adPrice}>{material}</Text>
-        <Text style={styles.adPrice}>{precio}</Text>
-        <Text style={styles.adPrice}>{descripcion}</Text>
-        <View style={styles.locationContainer}>
-          <Ionicons name="location-outline" size={16} color="#666" />
+  const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void) => (
+    <Modal visible={!!item} transparent={true} onRequestClose={closeModal}>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Image source={{ uri: item?.imagenUrl }} style={styles.modalImage} resizeMode="cover" />
+          <Text style={styles.modalTitle}>{item ? ('nombre' in item ? item.nombre : item.tipo) : ''}</Text>
+          <Text style={styles.modalPrice}>{item ? `$${'price' in item ? item.price : item.precio}` : ''}</Text>
+          {item && 'descripcion' in item && <Text style={styles.modalDescription}>{item.descripcion}</Text>}
+         
+          <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
         </View>
       </View>
-    </TouchableOpacity>
+    </Modal>
+    
   );
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.categoriesSection}>
-        <Text style={styles.sectionTitle}>Categories</Text>
-        <FlatList
-          data={categories}
-          renderItem={renderCategory}
-          keyExtractor={(item) => item.id.toString()}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesList}
-        />
-      </View>
-
-      <View style={styles.featuredSection}>
-        <View style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginVertical: 10,
-          alignItems: 'center'
-        }}>
-          <Text style={styles.sectionTitle}>Vallas publicitarias</Text>
-          <TouchableOpacity onPress={() => router.push('/vallas')} style={styles.seeAllButton}>
-            <Text style={styles.seeAllText}>Ver todos</Text>
-          </TouchableOpacity>
-        </View>
-{   !loading.vallas  ? <FlatList
-          data={vallas.reverse().slice(0, 5)}
-          renderItem={renderFeaturedAd}
-          keyExtractor={(item) => item.id.toString()}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.featuredList}
-        /> : (
-          <ActivityIndicator size="large"  color="#007AFF" />
-        )}
-      </View>
-
-      <View style={styles.recentSection}>
-        <View style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginVertical: 10,
-            alignItems: 'center'
-          }}>
-            <Text style={styles.sectionTitle}>Avisos</Text>
-            <TouchableOpacity onPress={() => router.push('/avisos')} style={styles.seeAllButton}>
-              <Text style={styles.seeAllText}>Ver todos</Text>
+      {showSplashAd && (
+        <Modal visible={showSplashAd} transparent={true} onRequestClose={() => setShowSplashAd(false)}>
+          <View style={styles.splashAdContainer}>
+            <TouchableOpacity style={styles.splashCloseButton} onPress={() => setShowSplashAd(false)}>
+              <Ionicons name="close" size={24} color="white" />
             </TouchableOpacity>
+            <Image source={add} style={styles.splashImage} />
           </View>
-          {   !loading.avisos  ? <FlatList
-            data={avisos.reverse().slice(0, 5)}
-            renderItem={renderAviso}
-            keyExtractor={(item) => item.id.toString()}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.featuredList}
-          /> : (
-            <ActivityIndicator size="large"  color="#007AFF" />
-          )}
+        </Modal>
+      )}
+
+      <View style={styles.banner}>
+        <Image source={{ uri: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800' }} style={styles.bannerImage} />
       </View>
+
+      <Text style={styles.sectionTitle}>Vallas Disponibles</Text>
+      {loading.vallas ? <ActivityIndicator size="large" color="#007AFF" /> : <FlatList data={vallas} renderItem={({ item }) => renderItem({ item, onPress: () => setSelectedValla(item) })} keyExtractor={(item) => item.id.toString()} horizontal />}
+
+      <Text style={styles.sectionTitle}>Avisos Publicitarios</Text>
+      {loading.avisos ? <ActivityIndicator size="large" color="#007AFF" /> : <FlatList data={avisos} renderItem={({ item }) => renderItem({ item, onPress: () => setSelectedAviso(item) })} keyExtractor={(item) => item.id.toString()} horizontal />}
+
+      {renderDetailsModal(selectedValla, () => setSelectedValla(null))}
+      {renderDetailsModal(selectedAviso, () => setSelectedAviso(null))}
+
+
       <View style={styles.socialSection}>
   <Text style={styles.sectionTitle}>Contactanos</Text>
   <View style={styles.socialIcons}>
@@ -234,131 +127,33 @@ export default function Browse() {
   </View>
 </View>
     </ScrollView>
+
+    
   );
 }
 
 const styles = StyleSheet.create({
-  seeAllButton: {
-    padding: 8,
-    borderRadius: 4,
-    backgroundColor: 'transparent',
-  },
-  seeAllText: {
-    color: '#007AFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f8f8',
-  },
-  categoriesSection: {
-    padding: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 16,
-    color: '#1c1c1e',
-  },
-  categoriesList: {
-    paddingRight: 16,
-  },
-  categoryItem: {
-    alignItems: 'center',
-    marginRight: 20,
-  },
-  categoryIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#E8F0FE',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  categoryName: {
-    fontSize: 12,
-    color: '#1c1c1e',
-    textAlign: 'center',
-  },
-  featuredSection: {
-    padding: 16,
-  },
-  featuredList: {
-    paddingRight: 16,
-  },
-  adCard: {
-    width: 280,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginRight: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  adImage: {
-    width: '100%',
-    height: 160,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-  },
-  adInfo: {
-    padding: 12,
-  },
-  adTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1c1c1e',
-    marginBottom: 4,
-  },
-  adPrice: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#007AFF',
-    marginBottom: 8,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  adLocation: {
-    fontSize: 14,
-    color: '#666',
-    marginLeft: 4,
-  },
-  recentSection: {
-    padding: 16,
-  },
-  recentAdCard: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  recentAdImage: {
-    width: 120,
-    height: 120,
-    borderTopLeftRadius: 12,
-    borderBottomLeftRadius: 12,
-  },
-  recentAdInfo: {
-    flex: 1,
-    padding: 12,
-  },
+  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  banner: { width: '100%', height: 200, marginBottom: 10 },
+  bannerImage: { width: '100%', height: '100%', borderRadius: 10 },
+  sectionTitle: { fontSize: 20, fontWeight: 'bold', paddingHorizontal: 20, marginVertical: 10, color: '#333' },
+  card: { backgroundColor: 'white', borderRadius: 10, overflow: 'hidden', marginHorizontal: 10, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 5, elevation: 2, width: 200 },
+  image: { width: '100%', height: 120 },
+  cardInfo: { padding: 10 },
+  title: { fontSize: 16, fontWeight: 'bold', color: '#333' },
+  price: { fontSize: 14, fontWeight: '600', color: '#007AFF' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
+  modalContent: { backgroundColor: 'white', padding: 20, borderRadius: 12, width: '80%', alignItems: 'center' },
+  modalImage: { width: '100%', height: 200, borderRadius: 10, marginBottom: 10 },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', textAlign: 'center' },
+  modalPrice: { fontSize: 16, fontWeight: '600', color: '#007AFF', marginBottom: 10 },
+  modalDescription: { textAlign: 'center', marginBottom: 10, color: '#666' },
+ // socialIcons: { flexDirection: 'row', gap: 20, marginVertical: 10 },
+  closeButton: { backgroundColor: '#007AFF', paddingVertical: 8, paddingHorizontal: 20, borderRadius: 8, marginTop: 10 },
+  closeButtonText: { color: 'white', fontWeight: 'bold' },
+  splashAdContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
+  splashCloseButton: { position: 'absolute', top: 20, right: 20, zIndex: 1 },
+  splashImage: { width: '60%', height: '60%' },
   socialSection: {
     padding: 16,
     alignItems: 'center',
@@ -385,4 +180,5 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   }
+  
 });

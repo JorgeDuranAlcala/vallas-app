@@ -3,12 +3,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAdvertisements } from '@/hooks/useAd';
 import { IAviso, IValla } from '.';
 import { useState } from 'react';
+import { RefreshControl } from 'react-native'
 
 
 export default function Avisos() {
   const [page, setPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
   const ITEMS_PER_PAGE = 3;
-  const { avisos, loading } = useAdvertisements();
+  const { avisos, loading, fetchData } = useAdvertisements();
 
   const totalPages = Math.ceil(avisos.length / ITEMS_PER_PAGE);
   const paginatedAvisos = avisos.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -112,7 +114,7 @@ export default function Avisos() {
     },
     pageInfo: {
       fontSize: 14,
-      color: '#666',
+      color: '#fff',
       fontWeight: '500',
     },
   });
@@ -120,7 +122,7 @@ export default function Avisos() {
     item: IAviso
   }) => (
     <TouchableOpacity style={styles.adCard} onPress={() => setSelectedAviso(item)}>
-        <Text>{item.id}</Text>
+        
       <Image source={{ uri: item.imagenUrl }} style={styles.adImage} />
       <View style={styles.adInfo}>
         <View style={styles.adHeader}>
@@ -136,6 +138,16 @@ export default function Avisos() {
     </TouchableOpacity>
   );
 
+  async function onRefresh() {
+    setRefreshing(true);
+    // Aquí puedes realizar la lógica para actualizar los datos
+    // Por ejemplo, puedes llamar a una función que recupere los datos actualizados
+    // y luego establecer los datos actualizados en el estado
+    // setAvisos(nuevoAvisos);
+    await fetchData();
+    setRefreshing(false);
+  }
+
   return (
     <View style={styles.container}>
       {avisos.length > 0 ? (
@@ -147,6 +159,12 @@ export default function Avisos() {
           contentContainerStyle={styles.listContainer}
           onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }
         />
         {renderDetailsModal()}
         </>
@@ -183,29 +201,32 @@ const styles = StyleSheet.create({
       },
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#f2f2f2',
+  
+    
   },
   listContainer: {
     padding: 16,
   },
   adCard: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 16,
     marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 6,
+    elevation: 5,
+    overflow: 'hidden', // Ensure the image corners are rounded
+    borderColor: '#e0e0e0',
+    borderWidth: 1,
   },
   adImage: {
     width: '100%',
     height: 200,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    resizeMode: 'cover', // Ensure the image covers the area without stretching
   },
   adInfo: {
     padding: 16,
@@ -217,15 +238,15 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   adTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1c1c1e',
-    marginBottom: 4,
+    fontSize: 20,
+  fontWeight: '700',
+  color: '#333',
+  marginBottom: 8,
   },
   adPrice: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#007AFF',
+    fontSize: 22,
+  fontWeight: '800',
+  color: '#007AFF',
   },
   heartButton: {
     padding: 4,

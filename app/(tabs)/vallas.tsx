@@ -1,124 +1,102 @@
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, Modal, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { 
+  View, Text, StyleSheet, FlatList, Image, TouchableOpacity, 
+  ActivityIndicator, Modal, ScrollView 
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAdvertisements } from '@/hooks/useAd';
 import { IValla } from '.';
-import { useState } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
 
-const savedAds = [
-  {
-    id: '1',
-    title: '2022 Tesla Model 3',
-    price: '$45,000',
-    location: 'San Francisco, CA',
-    image: 'https://images.unsplash.com/photo-1561580125-028ee3bd62eb?w=800&auto=format&fit=crop&q=60',
-    savedDate: '2 days ago',
-  },
-  {
-    id: '2',
-    title: 'Luxury Apartment',
-    price: '$2,500/mo',
-    location: 'New York, NY',
-    image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&auto=format&fit=crop&q=60',
-    savedDate: '1 week ago',
-  },
-];
+
+const ITEMS_PER_PAGE = 3;
 
 export default function Vallas() {
   const [page, setPage] = useState(1);
-  const ITEMS_PER_PAGE = 3;
   const { vallas, loading } = useAdvertisements();
-
   const [selectedValla, setSelectedValla] = useState<IValla | null>(null);
+
+  const totalPages = Math.ceil(vallas.length / ITEMS_PER_PAGE);
+  const paginatedVallas = vallas.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+  const handleNextPage = () => setPage((prev) => Math.min(prev + 1, totalPages));
+  const handlePrevPage = () => setPage((prev) => Math.max(prev - 1, 1));
 
   const renderDetailsModal = () => (
     <Modal
       visible={!!selectedValla}
-      transparent={true}
+      transparent
       onRequestClose={() => setSelectedValla(null)}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <ScrollView>
-            <Image 
-              source={{ uri: selectedValla?.imagenUrl }} 
-              style={styles.modalImage}
-              resizeMode="cover"
-            />
-            <View style={styles.modalDetails}>
-              <Text style={styles.modalTitle}>{selectedValla?.nombre}</Text>
-              <Text style={styles.modalPrice}>Price: ${selectedValla?.price}</Text>
-              <Text style={styles.modalPrice}>Price: ${selectedValla?.price}</Text>
-              
-              <TouchableOpacity 
-                style={styles.closeButton}
-                onPress={() => setSelectedValla(null)}
-              >
-                <Text style={styles.closeButtonText}>Cerrar</Text>
-              </TouchableOpacity>
-            </View>
+            {selectedValla && (
+              <>
+                <Image 
+                  source={{ uri: selectedValla.imagenUrl }} 
+                  style={styles.modalImage}
+                  resizeMode="cover"
+                />
+                <View style={styles.modalDetails}>
+                  <Text style={styles.modalTitle}>{selectedValla.nombre}</Text>
+                  <Text style={styles.modalPrice}>Price: ${selectedValla.price}</Text>
+
+                  <TouchableOpacity 
+                    style={styles.closeButton}
+                    onPress={() => setSelectedValla(null)}
+                  >
+                    <Text style={styles.closeButtonText}>Cerrar</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
           </ScrollView>
         </View>
       </View>
     </Modal>
   );
 
-  const totalPages = Math.ceil(vallas.length / ITEMS_PER_PAGE);
-  const paginatedVallas = vallas.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const renderPagination = () => (
+    <View style={styles.paginationContainer}>
+      <TouchableOpacity 
+        onPress={handlePrevPage}
+        disabled={page === 1}
+        style={[styles.pageButton, page === 1 && styles.pageButtonDisabled]}
+      >
+        <Text style={styles.pageButtonText}>Anterior</Text>
+      </TouchableOpacity>
+      
+      <Text style={styles.pageInfo}>Página {page} de {totalPages}</Text>
+      
+      <TouchableOpacity 
+        onPress={handleNextPage}
+        disabled={page === totalPages}
+        style={[styles.pageButton, page === totalPages && styles.pageButtonDisabled]}
+      >
+        <Text style={styles.pageButtonText}>Siguiente</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
-  const goToNextPage = () => {
-    if (page < totalPages) {
-      setPage(prev => prev + 1);
-    }
-  };
-
-  const goToPreviousPage = () => {
-    if (page > 1) {
-      setPage(prev => prev - 1);
-    }
-  };
-
-  const renderFooter = () => {
-    return (
-      <View style={styles.footer}>
-        <View style={styles.paginationContainer}>
-          <TouchableOpacity 
-            onPress={goToPreviousPage}
-            disabled={page === 1}
-            style={[styles.pageButton, page === 1 && styles.pageButtonDisabled]}
-          >
-            <Text style={styles.pageButtonText}>Anterior</Text>
-          </TouchableOpacity>
-          
-          <Text style={styles.pageInfo}>Pagina {page} de {totalPages}</Text>
-          
-          <TouchableOpacity 
-            onPress={goToNextPage}
-            disabled={page === totalPages}
-            style={[styles.pageButton, page === totalPages && styles.pageButtonDisabled]}
-          >
-            <Text style={styles.pageButtonText}>Siguiente</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  const renderItem = ({ item }: {
-    item: IValla
-  }) => (
+  const renderItem = ({ item }: { item: IValla }) => (
     <TouchableOpacity
-     style={styles.adCard}
-     onPress={() => setSelectedValla(item)}
+      style={styles.adCard}
+      onPress={() => setSelectedValla(item)}
     >
       <Image source={{ uri: item.imagenUrl }} style={styles.adImage} />
+      <LinearGradient
+      colors={['rgba(0,0,0,0)', 'rgba(0, 0, 0, 0.1)']}
+      style={styles.imageOverlay}
+    />
       <View style={styles.adInfo}>
         <View style={styles.adHeader}>
           <View>
             <Text style={styles.adTitle}>{item.nombre}</Text>
-            <Text style={styles.adPrice}>{item.price}</Text>
+            <Text style={styles.adPrice}>${item.price}</Text>
           </View>
           <TouchableOpacity style={styles.heartButton}>
-            <Ionicons name="heart" size={24} color="#007AFF" />
+            <Ionicons name="heart" size={24} color="#FF5A5F" />
           </TouchableOpacity>
         </View>
       </View>
@@ -129,20 +107,19 @@ export default function Vallas() {
     <View style={styles.container}>
       {vallas.length > 0 ? (
         <>
-        <FlatList
-          data={paginatedVallas}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.listContainer}
-          ListFooterComponent={renderFooter}
-        />
-        {renderDetailsModal()}
+          <FlatList
+            data={paginatedVallas}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={styles.listContainer}
+            ListFooterComponent={renderPagination}
+          />
+          {selectedValla && renderDetailsModal()}
         </>
-
       ) : (
         <View style={styles.emptyState}>
           <Ionicons name="heart-outline" size={64} color="#666" />
-          {!loading.vallas ? (
+          {!loading ? (
             <>
               <Text style={styles.emptyStateTitle}>No Saved Ads</Text>
               <Text style={styles.emptyStateText}>
@@ -161,29 +138,28 @@ export default function Vallas() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#f2f2f2',
   },
   listContainer: {
     padding: 16,
   },
   adCard: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 16,
     marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 6,
+    elevation: 5,
+    overflow: 'hidden', // Ensure the image corners are rounded
   },
   adImage: {
     width: '100%',
-    height: 200,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+  height: 200,
+  borderTopLeftRadius: 16,
+  borderTopRightRadius: 16,
+  resizeMode: 'cover', // Ensure the image covers the area without stretching
   },
   adInfo: {
     padding: 16,
@@ -192,36 +168,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 8,
   },
   adTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1c1c1e',
-    marginBottom: 4,
+    fontSize: 20,
+  fontWeight: '700',
+  color: '#333',
+  marginBottom: 8,
   },
   adPrice: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 22,
+    fontWeight: '800',
     color: '#007AFF',
   },
   heartButton: {
     padding: 4,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  adLocation: {
-    fontSize: 14,
-    color: '#666',
-    marginLeft: 4,
-  },
-  savedDate: {
-    fontSize: 12,
-    color: '#666',
-    fontStyle: 'italic',
   },
   emptyState: {
     flex: 1,
@@ -232,7 +192,7 @@ const styles = StyleSheet.create({
   emptyStateTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1c1c1e',
+    color: '#333',
     marginTop: 16,
     marginBottom: 8,
   },
@@ -241,16 +201,11 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
   },
-  footer: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 20
+    padding: 16,
   },
   pageButton: {
     backgroundColor: '#007AFF',
@@ -267,7 +222,7 @@ const styles = StyleSheet.create({
   },
   pageInfo: {
     fontSize: 14,
-    color: '#666',
+    color: '#333',
     fontWeight: '500',
   },
   modalOverlay: {
@@ -275,42 +230,57 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.8)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20
+    padding: 20,
   },
   modalContent: {
     backgroundColor: 'white',
-    borderRadius: 12,
+    borderRadius: 16,
     width: '90%',
     maxHeight: '80%',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
   },
   modalImage: {
     width: '100%',
-    height: 300
+    height: 300,
   },
   modalDetails: {
-    padding: 20
+    padding: 20,
   },
   modalTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
-    marginBottom: 10
+    marginBottom: 12,
+    color: '#333',
   },
   modalPrice: {
-    fontSize: 18,
-    color: '#007AFF',
-    marginBottom: 15
+    fontSize: 22,
+  color: '#007AFF',
+  fontWeight: '700',
+  marginBottom: 20,
   },
   closeButton: {
     backgroundColor: '#007AFF',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20
+  padding: 15,
+  borderRadius: 12,
+  alignItems: 'center',
+  marginTop: 20,
+  width: '100%',
   },
   closeButtonText: {
     color: 'white',
     fontWeight: '600',
-    fontSize: 16
-  }
+    fontSize: 18,
+  },
+  imageOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
 });
