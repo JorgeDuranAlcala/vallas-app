@@ -4,7 +4,7 @@
     "slug": "vallas",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon-app.png",
+    "icon": "./assets/images/logo.jpg",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -28,7 +28,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/icon-app.png",
+          "image": "./assets/images/logo.jpg",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

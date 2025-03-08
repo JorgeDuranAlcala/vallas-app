@@ -100,7 +100,7 @@ export default function Avisos() {
       gap: 20,
     },
     pageButton: {
-      backgroundColor: '#007AFF',
+      backgroundColor: '#fd0100',
       paddingHorizontal: 16,
       paddingVertical: 8,
       borderRadius: 8,
@@ -114,7 +114,7 @@ export default function Avisos() {
     },
     pageInfo: {
       fontSize: 14,
-      color: '#fff',
+      color: 'black',
       fontWeight: '500',
     },
   });
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
   closeButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#fd0100',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',

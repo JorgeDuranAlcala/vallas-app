@@ -7,13 +7,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAdvertisements } from '@/hooks/useAd';
 import { IValla } from '.';
 import { LinearGradient } from 'expo-linear-gradient';
+import { RefreshControl } from 'react-native'
 
 
 const ITEMS_PER_PAGE = 3;
 
 export default function Vallas() {
   const [page, setPage] = useState(1);
-  const { vallas, loading } = useAdvertisements();
+  const [refreshing, setRefreshing] = useState(false);
+  const { vallas, loading,fetchData } = useAdvertisements();
   const [selectedValla, setSelectedValla] = useState<IValla | null>(null);
 
   const totalPages = Math.ceil(vallas.length / ITEMS_PER_PAGE);
@@ -40,7 +42,12 @@ export default function Vallas() {
                 />
                 <View style={styles.modalDetails}>
                   <Text style={styles.modalTitle}>{selectedValla.nombre}</Text>
-                  <Text style={styles.modalPrice}>Price: ${selectedValla.price}</Text>
+                  <Text style={styles.modalPrice}>Precio: ${selectedValla.price}</Text>
+                  <Text style={styles.modalPrice}>Ubicacion: {selectedValla.ubicacion}</Text>
+                  <Text style={styles.modalPrice}>Estado: {selectedValla.estado.estado}</Text>
+                  <Text style={styles.modalPrice}>Ciudad: {selectedValla.ciudad.ciudad}</Text>
+                  <Text style={styles.modalPrice}>Tamaño: {selectedValla.ancho} x {selectedValla.alto}</Text>
+
 
                   <TouchableOpacity 
                     style={styles.closeButton}
@@ -93,7 +100,19 @@ export default function Vallas() {
         <View style={styles.adHeader}>
           <View>
             <Text style={styles.adTitle}>{item.nombre}</Text>
-            <Text style={styles.adPrice}>${item.price}</Text>
+            <Text style={styles.adPrice}>Precio: ${item.price}</Text>
+            
+             <View style={styles.locationContainer}>
+                            <Ionicons name="location-outline" size={16} color="#007AFF" />
+                            <Text style={styles.locationText}>{item.ubicacion}</Text>,
+                            {/* If ciudad is also part of the Valla, render it */}
+                            {'ciudad' in item && item.ciudad && (
+                              <Text style={styles.locationText}>{item.ciudad.ciudad}</Text>
+                            )},
+                             {'estado' in item && item.estado && (
+                              <Text style={styles.locationText}>{item.estado.estado}</Text>
+                            )}
+                          </View>
           </View>
           <TouchableOpacity style={styles.heartButton}>
             <Ionicons name="heart" size={24} color="#FF5A5F" />
@@ -102,6 +121,17 @@ export default function Vallas() {
       </View>
     </TouchableOpacity>
   );
+
+  async function onRefresh() {
+    setRefreshing(true);
+    // Aquí puedes realizar la lógica para actualizar los datos
+    // Por ejemplo, puedes llamar a una función que recupere los datos actualizados
+    // y luego establecer los datos actualizados en el estado
+    // setAvisos(nuevoAvisos);
+    await fetchData();
+    setRefreshing(false);
+  }
+
 
   return (
     <View style={styles.container}>
@@ -113,6 +143,12 @@ export default function Vallas() {
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.listContainer}
             ListFooterComponent={renderPagination}
+            refreshControl={
+                        <RefreshControl
+                          refreshing={refreshing}
+                          onRefresh={onRefresh}
+                        />
+                      }
           />
           {selectedValla && renderDetailsModal()}
         </>
@@ -208,7 +244,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   pageButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#fd0100',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -264,7 +300,7 @@ const styles = StyleSheet.create({
   marginBottom: 20,
   },
   closeButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#fd0100',
   padding: 15,
   borderRadius: 12,
   alignItems: 'center',
@@ -283,4 +319,14 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5, // Optional: adds some space above the location text
+  },
+  locationText: {
+    fontSize: 14,
+    color: '#333',
+    marginLeft: 5, // Space between the icon and the text
+  }
 });

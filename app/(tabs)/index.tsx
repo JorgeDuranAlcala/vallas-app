@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, Image, Modal, TouchableOpacity, FlatList, ActivityIndicator, Linking } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import add from '../../assets/images/add.jpeg';
 
@@ -8,6 +9,9 @@ export interface IValla {
   nombre: string;
   imagenUrl: string;
   price: number;
+  ubicacion:string;
+  ciudad:string;
+  estado:string;
 }
 
 export interface IAviso {
@@ -18,6 +22,7 @@ export interface IAviso {
   descripcion: string;
   fechaCreacion: string;
   imagenUrl: string;
+  ubicacion:string;
 }
 
 export default function Browse() {
@@ -48,34 +53,70 @@ export default function Browse() {
     })();
   }, []);
 
-  const renderItem = ({ item, onPress }: { item: IValla | IAviso; onPress: () => void }) => (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
-      <Image source={{ uri: item.imagenUrl }} style={styles.image} />
-      <View style={styles.cardInfo}>
-        <Text style={styles.title}>{'nombre' in item ? item.nombre : item.tipo}</Text>
-        <Text style={styles.price}>${'price' in item ? item.price : item.precio}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void) => (
-    <Modal visible={!!item} transparent={true} onRequestClose={closeModal}>
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Image source={{ uri: item?.imagenUrl }} style={styles.modalImage} resizeMode="cover" />
-          <Text style={styles.modalTitle}>{item ? ('nombre' in item ? item.nombre : item.tipo) : ''}</Text>
-          <Text style={styles.modalPrice}>{item ? `$${'price' in item ? item.price : item.precio}` : ''}</Text>
-          {item && 'descripcion' in item && <Text style={styles.modalDescription}>{item.descripcion}</Text>}
-         
-          <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
+  // Inside your Browse component
+const navigation = useNavigation();
+const renderItem = ({ item, onPress }: { item: IValla | IAviso; onPress: () => void }) => (
+  <TouchableOpacity style={styles.card} onPress={onPress}>
+    <Image source={{ uri: item.imagenUrl }} style={styles.image} />
+    <View style={styles.cardInfo}>
+      <Text style={styles.title}>{'nombre' in item ? item.nombre : item.tipo}</Text>
+      <Text style={styles.price}>${'price' in item ? item.price : item.precio}</Text>
+      
+      {/* Conditionally render location information only for Vallas */}
+      {'ubicacion' in item && (
+        <View style={styles.locationContainer}>
+          <Ionicons name="location-outline" size={16} color="#007AFF" />
+          <Text style={styles.locationText}>{item.ubicacion}</Text>
+          {/* If ciudad is also part of the Valla, render it */}
+          {'ciudad' in item && item.ciudad && (
+            <Text style={styles.locationText}>{item.ciudad.ciudad}</Text>
+          )}
+          
         </View>
-      </View>
-    </Modal>
-    
-  );
+      )}
+    </View>
+  </TouchableOpacity>
+);
+  
+const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void) => (
+  <Modal visible={!!item} transparent={true} onRequestClose={closeModal}>
+    <View style={styles.modalOverlay}>
+      <View style={styles.modalContent}>
+        {item && (
+          <>
+            <Image source={{ uri: item.imagenUrl }} style={styles.modalImage} resizeMode="cover" />
+            <Text style={styles.modalTitle}>{'nombre' in item ? item.nombre : item.tipo}</Text>
+            <Text style={styles.modalPrice}>{`$${'price' in item ? item.price : item.precio}`}</Text>
+            
+            {/* Conditionally render description and location information only for Vallas */}
+            {'descripcion' in item && <Text style={styles.modalDescription}>{item.descripcion}</Text>}
+            
+            {/* Render location information only for Vallas */}
+            {'ubicacion' in item && (
+              <View style={styles.locationContainer}>
+                <Ionicons name="location-outline" size={16} color="#007AFF" />
+                <Text style={styles.locationText}>{item.ubicacion}</Text>
+                <Text> ,</Text>
+                {/* If ciudad is also part of the Valla, render it */}
+                {'ciudad' in item && item.ciudad && (
+                  <Text style={styles.locationText}>{item.ciudad.ciudad}</Text>
+                )}
+                <Text> ,</Text>
+                 {'estado' in item && item.estado && (
+                  <Text style={styles.locationText}>{item.estado.estado}</Text>
+                )}
+              </View>
+            )}
+          </>
+        )}
 
+        <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+          <Text style={styles.closeButtonText}>Close</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </Modal>
+);
   return (
     <ScrollView style={styles.container}>
       {showSplashAd && (
@@ -93,10 +134,25 @@ export default function Browse() {
         <Image source={{ uri: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800' }} style={styles.bannerImage} />
       </View>
 
-      <Text style={styles.sectionTitle}>Vallas Disponibles</Text>
+      <Text style={styles.sectionTitle}>
+  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+    <Text>Vallas Disponibles</Text>
+    <TouchableOpacity style={styles.seeMoreButton} onPress={() => navigation.navigate('vallas')}>
+      <Text style={styles.seeMoreText}>Ver todos</Text>
+    </TouchableOpacity>
+  </View>
+</Text>
       {loading.vallas ? <ActivityIndicator size="large" color="#007AFF" /> : <FlatList data={vallas} renderItem={({ item }) => renderItem({ item, onPress: () => setSelectedValla(item) })} keyExtractor={(item) => item.id.toString()} horizontal />}
 
-      <Text style={styles.sectionTitle}>Avisos Publicitarios</Text>
+
+      <Text style={styles.sectionTitle}>
+  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+    <Text>Avisos Publicitarios</Text>
+    <TouchableOpacity style={styles.seeMoreButton} onPress={() => navigation.navigate('avisos')}>
+      <Text style={styles.seeMoreText}>Ver todos</Text>
+    </TouchableOpacity>
+  </View>
+</Text>
       {loading.avisos ? <ActivityIndicator size="large" color="#007AFF" /> : <FlatList data={avisos} renderItem={({ item }) => renderItem({ item, onPress: () => setSelectedAviso(item) })} keyExtractor={(item) => item.id.toString()} horizontal />}
 
       {renderDetailsModal(selectedValla, () => setSelectedValla(null))}
@@ -179,6 +235,32 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-  }
+  },
+  seeMoreButton: {
+    marginVertical: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    height: 40,
+    marginLeft: 50,
+    marginTop: 10,
+},
+
+  seeMoreText: { 
+    color: '#222831', 
+    fontSize: 16, 
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5, // Optional: adds some space above the location text
+  },
+  locationText: {
+    fontSize: 14,
+    color: '#333',
+    marginLeft: 5, // Space between the icon and the text
+  },
+  
   
 });
