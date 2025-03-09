@@ -63,15 +63,22 @@ useEffect(() => {
 
 useEffect(() => {
   handleSearch();
-}, [priceRange, priceRangeMin, selectedEstado, selectedCiudad, filterBy]); // Added filterBy to dependencies
+}, [priceRange, priceRangeMin, selectedEstado, selectedCiudad]); // Added filterBy to dependencies
 
 
 const handleSearch = async () => {
   setLoading(true);
   try {
     const response = await fetch(
-      `https://vallas-publicitaria.onrender.com/vallas/disponibles/search?minPrice=${priceRangeMin}&maxPrice=${priceRange}&estadoId=${selectedEstado}&ciudadId=${selectedCiudad}&filterBy=${filterBy}`
+      `https://vallas-publicitaria.onrender.com/vallas/disponibles/search?minPrice=${priceRangeMin}&maxPrice=${priceRange}&estadoId=${selectedEstado}&ciudadId=${selectedCiudad}`
     );
+    console.log({
+      priceRange,
+      priceRangeMin,
+      response,
+      selectedEstado,
+      selectedCiudad
+    })
     const data = await response.json();
     setSearchResults(data);
   } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   View, Text, StyleSheet, FlatList, Image, TouchableOpacity, 
   ActivityIndicator, Modal, ScrollView 
@@ -15,14 +15,20 @@ const ITEMS_PER_PAGE = 3;
 export default function Vallas() {
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
-  const { vallas, loading,fetchData } = useAdvertisements();
+  const { vallas, loading,fetchData, totalPages: vallasTotalPages } = useAdvertisements({ itemsPerPage: ITEMS_PER_PAGE });
   const [selectedValla, setSelectedValla] = useState<IValla | null>(null);
+  console.log('vallas', vallas)
+  const totalPages = vallasTotalPages;
+  const paginatedVallas = vallas;
 
-  const totalPages = Math.ceil(vallas.length / ITEMS_PER_PAGE);
-  const paginatedVallas = vallas.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
-
-  const handleNextPage = () => setPage((prev) => Math.min(prev + 1, totalPages));
-  const handlePrevPage = () => setPage((prev) => Math.max(prev - 1, 1));
+  const handleNextPage = () => {
+    fetchData(page + 1)
+    setPage(page + 1);
+  };
+  const handlePrevPage = () => {
+    fetchData(page - 1)
+    setPage(page - 1);
+  };
 
   const renderDetailsModal = () => (
     <Modal
@@ -64,6 +70,11 @@ export default function Vallas() {
     </Modal>
   );
 
+
+  console.log('vallas debug', {
+    diablebtn: page === totalPages
+  })
+
   const renderPagination = () => (
     <View style={styles.paginationContainer}>
       <TouchableOpacity 
@@ -104,14 +115,11 @@ export default function Vallas() {
             
              <View style={styles.locationContainer}>
                             <Ionicons name="location-outline" size={16} color="#007AFF" />
-                            <Text style={styles.locationText}>{item.ubicacion}</Text>,
-                            {/* If ciudad is also part of the Valla, render it */}
-                            {'ciudad' in item && item.ciudad && (
-                              <Text style={styles.locationText}>{item.ciudad.ciudad}</Text>
-                            )},
-                             {'estado' in item && item.estado && (
-                              <Text style={styles.locationText}>{item.estado.estado}</Text>
-                            )}
+                            <Text style={styles.locationText}>
+                              {item.ubicacion}
+                              {item.ciudad && `, ${item.ciudad.ciudad}`}
+                              {item.estado && `, ${item.estado.estado}`}
+                            </Text>
                           </View>
           </View>
           <TouchableOpacity style={styles.heartButton}>
@@ -128,7 +136,7 @@ export default function Vallas() {
     // Por ejemplo, puedes llamar a una función que recupere los datos actualizados
     // y luego establecer los datos actualizados en el estado
     // setAvisos(nuevoAvisos);
-    await fetchData();
+    await fetchData(page, ITEMS_PER_PAGE);
     setRefreshing(false);
   }
 

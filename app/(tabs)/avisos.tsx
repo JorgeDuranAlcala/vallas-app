@@ -10,7 +10,7 @@ export default function Avisos() {
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
   const ITEMS_PER_PAGE = 3;
-  const { avisos, loading, fetchData } = useAdvertisements();
+  const { avisos, loading, fetchData } = useAdvertisements({ itemsPerPage: ITEMS_PER_PAGE });
 
   const totalPages = Math.ceil(avisos.length / ITEMS_PER_PAGE);
   const paginatedAvisos = avisos.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
