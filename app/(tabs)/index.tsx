@@ -1,8 +1,13 @@
-import { View, Text, StyleSheet, ScrollView, Image, Modal, TouchableOpacity, FlatList, ActivityIndicator, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Modal, TouchableOpacity, FlatList, ActivityIndicator, Linking, Dimensions } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import add from '../../assets/images/add.jpeg';
+import banner from '../../assets/images/banner1.jpeg';
+import image1 from '../../assets/images/p1.jpeg';
+import image2 from '../../assets/images/p2.jpeg';
+import image3 from '../../assets/images/p3.jpeg';
+import image4 from '../../assets/images/p4.jpeg';  
 
 export interface IValla {
   id: number;
@@ -24,6 +29,51 @@ export interface IAviso {
   imagenUrl: string;
   ubicacion:string;
 }
+
+
+const mostSoldCartParts = [
+  {
+    id: '1',
+    name: 'Brake Pads',
+    price: 49.99,
+    soldCount: 1245,
+    icon: 'car-outline',
+    color: '#2563eb',
+    image: image1, // Brake pads image
+    isLocal:true
+  },
+  {
+    id: '2',
+    name: 'Oil Filter',
+    price: 15.99,
+    soldCount: 987,
+    icon: 'filter-outline',
+    color: '#10b981',
+    image: image2, // Oil filter image
+    isLocal:true
+  },
+  {
+    id: '3',
+    name: 'Battery',
+    price: 89.99,
+    soldCount: 756,
+    icon: 'battery-charging-outline',
+    color: '#f43f5e',
+    image: image3,// Battery image
+    isLocal:true
+  },
+  {
+    id: '4',
+    name: 'Air Filter',
+    price: 24.99,
+    soldCount: 623,
+    icon: 'funnel-outline',
+    color: '#8b5cf6',
+    image:image4, // Air filter image
+    isLocal:true
+  }
+];
+
 
 export default function Browse() {
   const [vallas, setVallas] = useState<IValla[]>([]);
@@ -77,6 +127,56 @@ const renderItem = ({ item, onPress }: { item: IValla | IAviso; onPress: () => v
     </View>
   </TouchableOpacity>
 );
+
+
+
+const renderMostSoldPartsGrid = (title: string, parts: any[]) => (
+  <View style={styles.gridSectionContainer}>
+    <View style={styles.gridSectionHeader}>
+      <Text style={styles.gridSectionTitle}>{title}</Text>
+      <TouchableOpacity style={styles.seeAllButton}>
+        <Text style={styles.seeAllButtonText}>See All</Text>
+        <Ionicons 
+          name="chevron-forward-outline" 
+          size={16} 
+          color="#2563eb" 
+        />
+      </TouchableOpacity>
+    </View>
+    <FlatList
+      data={parts}
+      renderItem={({ item }) => (
+        <TouchableOpacity 
+          style={styles.gridPartCard}
+          onPress={() => {/* Navigate to part details */}}
+        >
+          <View style={styles.gridPartBadge}>
+            <Text style={styles.gridPartBadgeText}>
+              {item.soldCount} Sold
+            </Text>
+          </View>
+          <Image 
+            source={item.isLocal ? item.image : { uri: item.image }} // Handle local and remote images
+            style={styles.gridPartImage} 
+          />
+          <View style={styles.gridPartDetails}>
+            <Text style={styles.gridPartName} numberOfLines={1}>
+              {item.name}
+            </Text>
+            <Text style={styles.gridPartPrice}>
+              ${item.price.toFixed(2)}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      )}
+      keyExtractor={(item) => item.id}
+      numColumns={2}
+      columnWrapperStyle={styles.gridColumnWrapper}
+    />
+  </View>
+);
+
+
   
 const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void) => (
   <Modal visible={!!item} transparent={true} onRequestClose={closeModal}>
@@ -131,12 +231,12 @@ const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void
       )}
 
       <View style={styles.banner}>
-        <Image source={{ uri: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800' }} style={styles.bannerImage} />
+        <Image source={banner} style={styles.bannerImage} />
       </View>
 
       <Text style={styles.sectionTitle}>
   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-    <Text>Vallas Disponibles</Text>
+    <Text style={styles.vallastitle}>Vallas Disponibles</Text>
     <TouchableOpacity style={styles.seeMoreButton} onPress={() => navigation.navigate('vallas')}>
       <Text style={styles.seeMoreText}>Ver todos</Text>
     </TouchableOpacity>
@@ -147,7 +247,7 @@ const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void
 
       <Text style={styles.sectionTitle}>
   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-    <Text>Avisos Publicitarios</Text>
+    <Text style={styles.vallastitle}>Avisos Publicitarios</Text>
     <TouchableOpacity style={styles.seeMoreButton} onPress={() => navigation.navigate('avisos')}>
       <Text style={styles.seeMoreText}>Ver todos</Text>
     </TouchableOpacity>
@@ -157,6 +257,9 @@ const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void
 
       {renderDetailsModal(selectedValla, () => setSelectedValla(null))}
       {renderDetailsModal(selectedAviso, () => setSelectedAviso(null))}
+
+
+      {renderMostSoldPartsGrid('Nuestro Trabajo', mostSoldCartParts)}
 
 
       <View style={styles.socialSection}>
@@ -181,12 +284,15 @@ const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void
       <Ionicons name="logo-whatsapp" size={24} color="#25D366" />
     </TouchableOpacity>
   </View>
+
 </View>
     </ScrollView>
 
     
   );
 }
+
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F5F5' },
@@ -246,10 +352,17 @@ const styles = StyleSheet.create({
     marginLeft: 50,
     marginTop: 10,
 },
-
+ 
   seeMoreText: { 
     color: '#222831', 
-    fontSize: 16, 
+    fontSize: 20, 
+    fontWeight: 'bold',
+  },
+  vallastitle:{
+    fontSize: 20,
+    color: '#222831',
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
   locationContainer: {
     flexDirection: 'row',
@@ -260,6 +373,83 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
     marginLeft: 5, // Space between the icon and the text
+  },
+  gridSectionContainer: {
+    marginBottom: 24,
+    paddingHorizontal: 16,
+    marginTop:19,
+  },
+  gridSectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  gridSectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1e293b',
+  },
+  seeAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  seeAllButtonText: {
+    color: '#2563eb',
+    fontSize: 14,
+    marginRight: 4,
+  },
+  gridColumnWrapper: {
+    justifyContent: 'space-between',
+  },
+  gridPartCard: {
+    width: (width - 48) / 2, // Responsive width
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  gridPartBadge: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: '#2563eb',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    zIndex: 1,
+  },
+  gridPartBadgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  gridPartImage: {
+    width: '100%',
+    height: 150,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  gridPartDetails: {
+    padding: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  gridPartName: {
+    fontSize: 16,
+    fontWeight: '500',
+    flex: 1,
+    marginRight: 8,
+  },
+  gridPartPrice: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2563eb',
   },
   
   

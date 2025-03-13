@@ -69,24 +69,44 @@ useEffect(() => {
 const handleSearch = async () => {
   setLoading(true);
   try {
-    const response = await fetch(
-      `https://vallas-publicitaria.onrender.com/vallas/disponibles/search?minPrice=${priceRangeMin}&maxPrice=${priceRange}&estadoId=${selectedEstado}&ciudadId=${selectedCiudad}`
-    );
-    console.log({
-      priceRange,
-      priceRangeMin,
-      response,
-      selectedEstado,
-      selectedCiudad
-    })
+    console.log('Search Parameters:', {
+      minPrice: priceRangeMin,
+      maxPrice: priceRange,
+      estadoId: selectedEstado,
+      ciudadId: selectedCiudad
+    });
+
+    const url = new URL('https://vallas-publicitaria.onrender.com/vallas/disponibles/search');
+    url.searchParams.append('minPrice', priceRangeMin.toString());
+    url.searchParams.append('maxPrice', priceRange.toString());
+    
+    if (selectedEstado) {
+      url.searchParams.append('estadoId', selectedEstado.toString());
+    }
+    
+    if (selectedCiudad) {
+      url.searchParams.append('ciudadId', selectedCiudad.toString());
+    }
+
+    const response = await fetch(url.toString());
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const data = await response.json();
+    console.log('Search Results:', data);
+    
     setSearchResults(data);
   } catch (error) {
-    console.error('Search error:', error);
+    console.error('Detailed Search error:', error);
+    // Optionally, show an error message to the user
+    // Alert.alert('Search Error', 'Unable to perform search');
   } finally {
     setLoading(false);
   }
 };
+
 
 
   /*
