@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import Slider from '@react-native-community/slider'; // Add this import at the top
-import { Picker } from '@react-native-picker/picker';
 
 import {
   View,
@@ -18,6 +17,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { IValla } from '.';
 import VallasList from '@/components/VallasList';
 
+const popularSearches = [
+  'iPhone',
+  'Apartment',
+  'Used Cars',
+  'Furniture',
+  'Jobs',
+  'Laptops',
+];
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,94 +34,24 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [selectedValla, setSelectedValla] = useState<IValla | null>(null);
   const [page, setPage] = useState(1);
-  const [estados, setEstados] = useState([]);
-const [ciudades, setCiudades] = useState([]);
-const [selectedEstado, setSelectedEstado] = useState(null);
-const [selectedCiudad, setSelectedCiudad] = useState(null);
-const [filterBy, setFilterBy] = useState('price'); // New state for filter selection
-
   const ITEMS_PER_PAGE = 3;
   const MAX_PRICE = 10000;
 
-  
-useEffect(() => {
-  const fetchData = async () => {
+  const handleSearch = async () => {
+    setLoading(true);
     try {
-      const estadosResponse = await fetch('https://vallas-publicitaria.onrender.com/estados');
-      const estadosData = await estadosResponse.json();
-      setEstados(estadosData);
-
-      const ciudadesResponse = await fetch('https://vallas-publicitaria.onrender.com/ciudades');
-      const ciudadesData = await ciudadesResponse.json();
-      setCiudades(ciudadesData);
+      const response = await fetch(
+        `https://vallas-publicitaria.onrender.com/vallas/disponibles/search?minPrice=${priceRangeMin}&maxPrice=${priceRange}`
+      );
+      console.log(`https://vallas-publicitaria.onrender.com/vallas/disponibles/search?minPrice=${priceRangeMin}&maxPrice=${priceRange}`)
+      const data = await response.json();
+      setSearchResults(data);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Search error:', error);
+    } finally {
+      setLoading(false);
     }
   };
-
-  fetchData();
-}, []);
-
-
-useEffect(() => {
-  console.log("Updated selectedEstado:", selectedEstado);
-}, [selectedEstado]);
-
-
-useEffect(() => {
-  handleSearch();
-}, [priceRange, priceRangeMin, selectedEstado, selectedCiudad]); // Added filterBy to dependencies
-
-
-const handleSearch = async () => {
-  setLoading(true);
-  try {
-    console.log('Search Parameters:', {
-      minPrice: priceRangeMin,
-      maxPrice: priceRange,
-      estadoId: selectedEstado,
-      ciudadId: selectedCiudad
-    });
-
-    const url = new URL('https://vallas-publicitaria.onrender.com/vallas/disponibles/search');
-    url.searchParams.append('minPrice', priceRangeMin.toString());
-    url.searchParams.append('maxPrice', priceRange.toString());
-    
-    if (selectedEstado) {
-      url.searchParams.append('estadoId', selectedEstado.toString());
-    }
-    
-    if (selectedCiudad) {
-      url.searchParams.append('ciudadId', selectedCiudad.toString());
-    }
-
-    const response = await fetch(url.toString());
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('Search Results:', data);
-    
-    setSearchResults(data);
-  } catch (error) {
-    console.error('Detailed Search error:', error);
-    // Optionally, show an error message to the user
-    // Alert.alert('Search Error', 'Unable to perform search');
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-
-  /*
-  const handleEstadoChange = (itemValue) => {
-  setSelectedEstado(itemValue);
-  console.log("Selected Estado ID:", itemValue); // Debugging line
-};*/
-
 
     const renderDetailsModal = () => (
       <Modal
@@ -230,97 +167,66 @@ const handleSearch = async () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.filterContainer}>
-        <Text style={styles.sectionTitle}>Filtrar por:</Text>
-        <Picker
-          selectedValue={filterBy}
-          onValueChange={(itemValue) => setFilterBy(itemValue)}
-        >
-          <Picker.Item label="Rango de Precio" value="price" />
-          <Picker.Item label="Estado" value="estado" />
-          <Picker.Item label="Ciudad" value="ciudad" />
-        </Picker>
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholderTextColor="#666"
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity
+            onPress={() => setSearchQuery('')}
+            style={styles.clearButton}>
+            <Ionicons name="close-circle" size={20} color="#666" />
+          </TouchableOpacity>
+        )}
       </View>
 
-      {filterBy === 'price' && (
-        <>
-        <View style={styles.priceRangeContainer}>
-          <Text style={styles.sectionTitle}>Precio Maximo: ${priceRange}</Text>
-          <Slider
-            style={styles.slider}
-            minimumValue={0}
-            maximumValue={MAX_PRICE}
-            value={priceRange}
-            onValueChange={setPriceRange}
-            minimumTrackTintColor="#007AFF"
-            maximumTrackTintColor="#ddd"
-            step={10}
-          />
+      <View style={styles.priceRangeContainer}>
+        <Text style={styles.sectionTitle}>Precio Maximo: ${priceRange}</Text>
+       <Slider
+          style={styles.slider}
+          minimumValue={0}
+          maximumValue={MAX_PRICE}
+          value={priceRange}
+          onValueChange={setPriceRange}
+          minimumTrackTintColor="#007AFF"
+          maximumTrackTintColor="#ddd"
+          step={10}
+        /> 
+        <View style={styles.priceLabels}>
+          <Text style={styles.priceLabel}>$0</Text>
+          <Text style={styles.priceLabel}>${MAX_PRICE}</Text>
         </View>
+      </View>
 
-        
-<View style={styles.priceRangeContainer}>
-<Text style={styles.sectionTitle}>Precio Minimo: ${priceRangeMin}</Text>
-<Slider
-  style={styles.slider}
-  minimumValue={0}
-  maximumValue={MAX_PRICE}
-  value={priceRangeMin}
-  onValueChange={setPriceRangeMin}
-  minimumTrackTintColor="#007AFF"
-  maximumTrackTintColor="#ddd"
-  step={10}
-/>
-</View>
-</>
-      )}
-
-      {filterBy === 'estado' && (
-        <View style={styles.selectorContainer}>
-          <Text style={styles.sectionTitle}>Selecciona Estado:</Text>
-          <Picker
-            selectedValue={selectedEstado}
-            onValueChange={(itemValue) => {
-              setSelectedEstado(itemValue);
-              setSelectedCiudad(null);
-            }}
-          >
-            <Picker.Item label="Seleccione un estado" value={null} />
-            {estados.map((estado) => (
-              <Picker.Item key={estado.id} label={estado.estado}   value={estado.id} />
-            ))}
-          </Picker>
-
-          <Text style={styles.sectionTitle}>Selecciona Ciudad:</Text>
-          <Picker
-            selectedValue={selectedCiudad}
-            onValueChange={(itemValue) => {
-              setSelectedCiudad(itemValue);
-            }}
-          >
-            <Picker.Item label="Seleccione una ciudad" value={null} />
-            {ciudades
-              .filter((ciudad) => ciudad.estadoId === selectedEstado)
-              .map((ciudad) => (
-                <Picker.Item key={ciudad.id} label={ciudad.ciudad} value={ciudad.id} />
-              ))}
-          </Picker>
+      <View style={styles.priceRangeContainer}>
+        <Text style={styles.sectionTitle}>Precio minimo: ${priceRangeMin}</Text>
+      <Slider
+          style={styles.slider}
+          minimumValue={0}
+          maximumValue={MAX_PRICE}
+          value={priceRangeMin}
+          onValueChange={setPriceRangeMin}
+          minimumTrackTintColor="#007AFF"
+          maximumTrackTintColor="#ddd"
+          step={100}
+        /> 
+        <View style={styles.priceLabels}>
+          <Text style={styles.priceLabel}>$0</Text>
         </View>
-      )}
-
+      </View>
+      
       {loading ? (
         <ActivityIndicator size="large" color="#007AFF" style={styles.loader} />
       ) : (
         renderSearchResults()
       )}
-
-      {/* Modal for displaying selected Valla details */}
-      {renderDetailsModal()}
     </View>
   );
-
-
-
 }
 
 const styles = StyleSheet.create({
@@ -419,7 +325,7 @@ const styles = StyleSheet.create({
     gap: 20
   },
   pageButton: {
-    backgroundColor: '#fd0100',
+    backgroundColor: '#007AFF',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -591,15 +497,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     fontSize: 16
-  },
-  selectorContainer: {
-    margin: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    
-  },
- 
+  }
 });
