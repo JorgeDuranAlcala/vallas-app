@@ -68,7 +68,7 @@ export default function TabLayout() {
   elevation: 5, // Android shadow
           },
           tabBarIcon: ({ size, color }) => (
-            <FontAwesome name="th-large" size={size} color={color} />
+            <FontAwesome name="home" size={size} color={color} />
           ),
         }}
       />
@@ -82,7 +82,7 @@ export default function TabLayout() {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Image
                 source={logo}
-                style={{ width: 40, height: 40, resizeMode: 'contain', marginRight: 10 }}
+                style={{ width: 100, height: 40, resizeMode: 'contain', marginRight: 10 }}
               />
               <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>
                 {children}
@@ -115,7 +115,7 @@ export default function TabLayout() {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Image
                 source={logo}
-                style={{ width: 40, height: 40, resizeMode: 'contain', marginRight: 10 }}
+                style={{ width: 100, height: 40, resizeMode: 'contain', marginRight: 10 }}
               />
               <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>
                 {children}
@@ -148,7 +148,7 @@ export default function TabLayout() {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Image
                 source={logo}
-                style={{ width: 40, height: 40, resizeMode: 'contain', marginRight: 10 }}
+                style={{ width: 100, height: 40, resizeMode: 'contain', marginRight: 10 }}
               />
               <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>
                 {children}
@@ -181,7 +181,7 @@ export default function TabLayout() {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Image
                 source={logo}
-                style={{ width: 40, height: 40, resizeMode: 'contain', marginRight: 10 }}
+                style={{ width: 100, height: 40, resizeMode: 'contain', marginRight: 10 }}
               />
               <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>
                 {children}

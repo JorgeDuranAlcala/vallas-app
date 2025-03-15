@@ -10,7 +10,7 @@ export default function Avisos() {
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
   const ITEMS_PER_PAGE = 3;
-  const { avisos, loading, fetchData } = useAdvertisements();
+  const { avisos, loading, fetchData } = useAdvertisements({ itemsPerPage: ITEMS_PER_PAGE });
 
   const totalPages = Math.ceil(avisos.length / ITEMS_PER_PAGE);
   const paginatedAvisos = avisos.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -100,7 +100,7 @@ export default function Avisos() {
       gap: 20,
     },
     pageButton: {
-      backgroundColor: '#007AFF',
+      backgroundColor: '#fd0100',
       paddingHorizontal: 16,
       paddingVertical: 8,
       borderRadius: 8,
@@ -114,7 +114,7 @@ export default function Avisos() {
     },
     pageInfo: {
       fontSize: 14,
-      color: '#fff',
+      color: 'black',
       fontWeight: '500',
     },
   });
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
   closeButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#fd0100',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
