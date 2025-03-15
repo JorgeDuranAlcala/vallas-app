@@ -8,6 +8,7 @@ import { useAdvertisements } from '@/hooks/useAd';
 import { IValla } from '.';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RefreshControl } from 'react-native'
+import { BackHandler } from 'react-native';
 
 
 const ITEMS_PER_PAGE = 3;
@@ -34,6 +35,7 @@ export default function Vallas() {
     <Modal
       visible={!!selectedValla}
       transparent
+      animationType="slide" // Added smooth animation
       onRequestClose={() => setSelectedValla(null)}
     >
       <View style={styles.modalOverlay}>
@@ -48,17 +50,51 @@ export default function Vallas() {
                 />
                 <View style={styles.modalDetails}>
                   <Text style={styles.modalTitle}>{selectedValla.nombre}</Text>
-                  <Text style={styles.modalPrice}>Precio: ${selectedValla.price}</Text>
-                  <Text style={styles.modalPrice}>Ubicacion: {selectedValla.ubicacion}</Text>
-                  <Text style={styles.modalPrice}>Estado: {selectedValla.estado.estado}</Text>
-                  <Text style={styles.modalPrice}>Ciudad: {selectedValla.ciudad.ciudad}</Text>
-                  <Text style={styles.modalPrice}>Tamaño: {selectedValla.ancho} x {selectedValla.alto}</Text>
-
-
+                  
+                  <View style={styles.modalInfoContainer}>
+                    <View style={styles.modalInfoItem}>
+                      <Ionicons name="cash-outline" size={26} color="#eee" />
+                      <Text style={styles.modalPrice}>
+                        {selectedValla.price} $
+                      </Text>
+                    </View>
+                    <View style={styles.modalInfoItem}>
+                      <Ionicons name="location-outline" size={26} color="#eee" />
+                      <Text style={styles.modalInfoLabel}>
+                        {selectedValla.ubicacion}
+                      </Text>
+                    </View>
+                  </View>
+  
+                  <View style={styles.modalInfoContainer}>
+                    <View style={styles.modalInfoItem}>
+                      <Ionicons name="business-outline" size={26} color="#eee" />
+                      <Text style={styles.modalInfoLabel}>
+                        Estado: {selectedValla.estado.estado}
+                      </Text>
+                    </View>
+                    <View style={styles.modalInfoItem}>
+                      <Ionicons name="map-outline" size={26} color="#eee" />
+                      <Text style={styles.modalInfoLabel}>
+                        Ciudad: {selectedValla.ciudad.ciudad}
+                      </Text>
+                    </View>
+                  </View>
+  
+                  <View style={styles.modalInfoContainer}>
+                    <View style={styles.modalInfoItem}>
+                      <Ionicons name="resize-outline" size={26} color="#eee" />
+                      <Text style={styles.modalInfoLabel}>
+                        Tamaño: {selectedValla.ancho} x {selectedValla.alto}
+                      </Text>
+                    </View>
+                  </View>
+  
                   <TouchableOpacity 
                     style={styles.closeButton}
                     onPress={() => setSelectedValla(null)}
                   >
+                    <Ionicons name="close-circle" size={24} color="white" />
                     <Text style={styles.closeButtonText}>Cerrar</Text>
                   </TouchableOpacity>
                 </View>
@@ -69,6 +105,7 @@ export default function Vallas() {
       </View>
     </Modal>
   );
+  
 
 
   console.log('vallas debug', {
@@ -271,62 +308,89 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: 'rgba(0,0,0,0.7)', // Slightly more transparent
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   modalContent: {
     backgroundColor: 'white',
-    borderRadius: 16,
-    width: '90%',
-    maxHeight: '80%',
-    overflow: 'hidden',
+    borderRadius: 20, // Increased border radius
+    width: '95%', // Slightly wider
+    maxHeight: '85%', // Slightly taller
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 6 }, // Increased shadow depth
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 15,
+    overflow: 'hidden',
   },
   modalImage: {
     width: '100%',
-    height: 300,
+    height: 350, // Increased height
+    resizeMode: 'cover',
   },
   modalDetails: {
-    padding: 20,
+    padding: 24, // Increased padding
+    backgroundColor: '#fd0100',
+        marginLeft: 0,
+
+
   },
   modalTitle: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#333',
+    fontSize: 28, // Larger font size
+    fontWeight: '800', // Bolder weight
+    color: '#eee',
+    marginBottom: 16,
+    letterSpacing: -0.5, // Tighter letter spacing
+  },
+  modalInfoContainer: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'left',
+    marginBottom: 20,
+   
+    
+  },
+  modalInfoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    color: '#eee',
+  },
+  modalInfoLabel: {
+    fontSize: 16,
+    color: '#eee',
+    marginLeft: 8,
+    fontWeight: '700',
+    
   },
   modalPrice: {
-    fontSize: 22,
-  color: '#007AFF',
-  fontWeight: '700',
-  marginBottom: 20,
+    fontSize: 24,
+    color: '#eee',
+    fontWeight: '700',
+    marginBottom: 5,
+    marginLeft: 8,
+
   },
   closeButton: {
-    backgroundColor: '#fd0100',
-  padding: 15,
-  borderRadius: 12,
-  alignItems: 'center',
-  marginTop: 20,
-  width: '100%',
+    backgroundColor: '#ccc', // Changed to a more professional blue
+    padding: 16,
+    borderRadius: 16,
+    borderColor: '2px solid #eee',
+    alignItems: 'center',
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  
   },
   closeButtonText: {
     color: 'white',
-    fontWeight: '600',
+    fontWeight: '700',
     fontSize: 18,
+    marginLeft: 10,
   },
-  imageOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
+  
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
