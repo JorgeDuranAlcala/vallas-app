@@ -19,7 +19,7 @@ export const useAdvertisements = ({
   const fetchData = async (page: number = 1, limit?: number) => {
     setLoading(prev => ({ ...prev, vallas: true }));
     try {
-      const vallasResponse = await fetch(`https://vallas-publicitaria.onrender.com/vallas?page=${page}&limit=${limit ? limit : itemsPerPage}&cache=false`);
+      const vallasResponse = await fetch(`https://vallas-publicitaria.onrender.com/vallas?page=${page}&limit=${limit ? limit : itemsPerPage}`);
       const vallasData = await vallasResponse.json();
       setVallas(vallasData.items);
       setTotalPages(vallasData.total);
@@ -31,7 +31,7 @@ export const useAdvertisements = ({
 
     setLoading(prev => ({ ...prev, avisos: true }));
     try {
-      const avisosResponse = await fetch(`https://vallas-publicitaria.onrender.com/avisos?page=${page}&limit=${limit ? limit : itemsPerPage}&cache=false`);
+      const avisosResponse = await fetch(`https://vallas-publicitaria.onrender.com/avisos?page=${page}&limit=${limit ? limit : itemsPerPage}`);
       const avisosData = await avisosResponse.json();
       setAvisos(avisosData.items);
     } catch (error) {
