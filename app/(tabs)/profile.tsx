@@ -59,7 +59,7 @@ export default function Profile() {
           onPress={() => Linking.openURL('https://www.google.com/maps/place/Barquisimeto+3001,+Lara/@10.0620252,-69.4452512,22290m/data=!3m2!1e3!4b1!4m6!3m5!1s0x8e87671d783e8671:0x972fe1e11519c3db!8m2!3d10.0677719!4d-69.3473509!16zL20vMDJzM2s0?hl=es&entry=ttu&g_ep=EgoyMDI1MDMxMi4wIKXMDSoASAFQAw%3D%3D')}
         >
           <Ionicons name="location-outline" size={24} color="#fd0100" />
-          <Text style={styles.contactText}>Caracas, Venezuela</Text>
+          <Text style={styles.contactText}>Barquisimeto, Venezuela</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
