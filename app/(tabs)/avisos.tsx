@@ -38,19 +38,51 @@ export default function Avisos() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <ScrollView>
+              {/* Image Section */}
               <Image 
                 source={{ uri: selectedAviso?.imagenUrl }} 
                 style={styles.modalImage}
                 resizeMode="cover"
               />
+    
+              {/* Details Section */}
               <View style={styles.modalDetails}>
-                <Text style={styles.modalTitle}>{selectedAviso?.descripcion}</Text>
-                <Text style={styles.modalPrice}>Price: ${selectedAviso?.precio}</Text>
-                
+                {/* Title with Icon */}
+                <View style={styles.modalRow}>
+                  <Ionicons name="information-circle-outline" size={24} color="#eee" />
+                  <Text style={styles.modalTitle}>{selectedAviso?.descripcion}</Text>
+                </View>
+    
+                {/* Price with Icon */}
+                <View style={styles.modalRow}>
+                  <Ionicons name="pricetag-outline" size={24} color="#eee" />
+                  <Text style={styles.modalPrice}>Precio: ${selectedAviso?.precio}</Text>
+                </View>
+    
+                {/* Type with Icon */}
+                <View style={styles.modalRow}>
+                  <Ionicons name="cube-outline" size={24} color="#eee" />
+                  <Text style={styles.modalDetail}>Tipo: {selectedAviso?.tipo}</Text>
+                </View>
+    
+                {/* Material with Icon */}
+                <View style={styles.modalRow}>
+                  <Ionicons name="construct-outline" size={24} color="#eee" />
+                  <Text style={styles.modalDetail}>Material: {selectedAviso?.material}</Text>
+                </View>
+    
+                {/* Description with Icon */}
+                <View style={styles.modalRow}>
+                  <Ionicons name="document-text-outline" size={24} color="#eee" />
+                  <Text style={styles.modalDetail}>Descripción: {selectedAviso?.descripcion}</Text>
+                </View>
+    
+                {/* Close Button */}
                 <TouchableOpacity 
                   style={styles.closeButton}
                   onPress={() => setSelectedAviso(null)}
                 >
+                  <Ionicons name="close-circle-outline" size={24} color="#eee" />
                   <Text style={styles.closeButtonText}>Cerrar</Text>
                 </TouchableOpacity>
               </View>
@@ -118,21 +150,37 @@ export default function Avisos() {
       fontWeight: '500',
     },
   });
-  const renderItem = ({ item }: {
-    item: IAviso
-  }) => (
+  
+  const renderItem = ({ item }: { item: IAviso }) => (
     <TouchableOpacity style={styles.adCard} onPress={() => setSelectedAviso(item)}>
-        
       <Image source={{ uri: item.imagenUrl }} style={styles.adImage} />
       <View style={styles.adInfo}>
         <View style={styles.adHeader}>
           <View>
-            <Text style={styles.adTitle}>{item.descripcion}</Text>
-            <Text style={styles.adPrice}>{item.precio}</Text>
+            {/* Title with Icon */}
+            <View style={styles.adRow}>
+              <Ionicons name="information-circle-outline" size={24} color="#333" />
+              <Text style={styles.adTitle}>Titulo: {item.tipo}</Text>
+            </View>
+  
+            {/* Price with Icon */}
+            <View style={styles.adRow}>
+              <Ionicons name="pricetag-outline" size={24} color="#333" />
+              <Text style={styles.adPrice}>Precio: {item.precio} $</Text>
+            </View>
+  
+            {/* Material with Icon */}
+            <View style={styles.adRow}>
+              <Ionicons name="cube-outline" size={24} color="#333" />
+              <Text style={styles.adPrice}>Material: {item.material}</Text>
+            </View>
+  
+            {/* Description with Icon */}
+            <View style={styles.adRow}>
+              <Ionicons name="document-text-outline" size={24} color="#333" />
+              <Text style={styles.addDescription}>Descripción: {item.descripcion}</Text>
+            </View>
           </View>
-          <TouchableOpacity style={styles.heartButton}>
-            <Ionicons name="heart" size={24} color="#007AFF" />
-          </TouchableOpacity>
         </View>
       </View>
     </TouchableOpacity>
@@ -231,6 +279,11 @@ const styles = StyleSheet.create({
   adInfo: {
     padding: 16,
   },
+  adRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   adHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -238,15 +291,24 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   adTitle: {
-    fontSize: 20,
+    fontSize: 26,
   fontWeight: '700',
   color: '#333',
   marginBottom: 8,
+  marginLeft:10,
   },
   adPrice: {
     fontSize: 22,
-  fontWeight: '800',
-  color: '#007AFF',
+  fontWeight: '700',
+  color: '#333',
+  marginLeft:10,
+  },
+  addDescription: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+    marginLeft:10,
   },
   heartButton: {
     padding: 4,
@@ -289,42 +351,61 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.8)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20
+    padding: 20,
   },
   modalContent: {
     backgroundColor: 'white',
     borderRadius: 12,
     width: '90%',
     maxHeight: '80%',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    color:'white'
   },
   modalImage: {
     width: '100%',
-    height: 300
+    height: 300,
   },
   modalDetails: {
-    padding: 20
+    backgroundColor:'#fd0100',
+    padding: 20,
+  },
+  modalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
   },
   modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10
+    fontSize: 28, // Larger font size
+
+    fontWeight: '800',
+    marginLeft: 10,
+    color: '#eee',
   },
   modalPrice: {
-    fontSize: 18,
-    color: '#007AFF',
-    marginBottom: 15
+    fontSize: 24,
+    fontWeight: '700',
+    marginLeft: 10,
+    color: '#eee',
+  },
+  modalDetail: {
+    fontSize: 16,
+    marginLeft: 10,
+    color: '#eee',
+    fontWeight: '700',
   },
   closeButton: {
-    backgroundColor: '#fd0100',
+    flexDirection: 'row',
+    backgroundColor: '#ccc',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20
+    justifyContent: 'center',
+    marginTop: 20,
   },
   closeButtonText: {
     color: 'white',
     fontWeight: '600',
-    fontSize: 16
-  }
+    fontSize: 16,
+    marginLeft: 10,
+  },
 });

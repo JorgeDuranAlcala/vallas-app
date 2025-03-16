@@ -176,7 +176,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Perfil',
+          title: 'Nosotros',
           headerTitle: ({ children }) => (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Image
@@ -200,7 +200,7 @@ export default function TabLayout() {
             elevation: 5, // Android shadow
           },
           tabBarIcon: ({ size, color }) => (
-            <FontAwesome name="user" size={size} color={color} />
+            <FontAwesome name="info-circle" size={size} color={color} />
           ),
         }}
       />
