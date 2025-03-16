@@ -256,7 +256,7 @@ const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void
   <View style={styles.socialIcons}>
     <TouchableOpacity 
       style={styles.socialButton}
-      onPress={() => Linking.openURL('https://instagram.com/victorcamacaro1999')}
+      onPress={() => Linking.openURL('https://instagram.com/ideapubve')}
     >
       <Ionicons name="logo-instagram" size={24} color="#E1306C" />
     </TouchableOpacity>
@@ -268,7 +268,7 @@ const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void
     </TouchableOpacity>
     <TouchableOpacity 
       style={styles.socialButton}
-      onPress={() => Linking.openURL('https://wa.me/+584267472630')}
+      onPress={() => Linking.openURL('https://wa.me/+584127812540')}
     >
       <Ionicons name="logo-whatsapp" size={24} color="#25D366" />
     </TouchableOpacity>
