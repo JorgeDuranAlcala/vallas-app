@@ -45,7 +45,7 @@ export default function Profile() {
           onPress={() => Linking.openURL('tel:+584127812540')}
         >
           <Ionicons name="call-outline" size={24} color="#fd0100" />
-          <Text style={styles.contactText}>+58 426-7472630</Text>
+          <Text style={styles.contactText}>+58 412-7812540</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.contactItem}
