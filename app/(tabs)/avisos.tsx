@@ -219,7 +219,7 @@ export default function Avisos() {
 
       ) : (
         <View style={styles.emptyState}>
-          <Ionicons name="heart-outline" size={64} color="#666" />
+          <Ionicons name="sync-circle-outline" size={64} color="#666" />
             {  !loading.avisos ?    ( 
                             <>
                                 <Text style={styles.emptyStateTitle}>No Saved Ads</Text>
