@@ -42,10 +42,10 @@ export default function Profile() {
         <Text style={styles.sectionTitle}>Contacto</Text>
         <TouchableOpacity 
           style={styles.contactItem}
-          onPress={() => Linking.openURL('tel:+584267472630')}
+          onPress={() => Linking.openURL('tel:+584127812540')}
         >
           <Ionicons name="call-outline" size={24} color="#fd0100" />
-          <Text style={styles.contactText}>+58 426-7472630</Text>
+          <Text style={styles.contactText}>+58 412-7812540</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.contactItem}
@@ -56,10 +56,10 @@ export default function Profile() {
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.contactItem}
-          onPress={() => Linking.openURL('https://www.google.com/maps/place/Urb.+Chalet,+Carora+3050,+Lara/@10.1949815,-70.0704185,17z/data=!3m1!4b1!4m15!1m8!3m7!1s0x8e87ed3b8b5b1d17:0x2715f059a5ea6b05!2sUrb.+Chalet,+Carora+3050,+Lara!3b1!8m2!3d10.1952542!4d-70.0678054!16s%2Fg%2F1hc1_q3l_!3m5!1s0x8e87ed3b8b5b1d17:0x2715f059a5ea6b05!8m2!3d10.1952542!4d-70.0678054!16s%2Fg%2F1hc1_q3l_?entry=ttu&g_ep=EgoyMDI1MDMwNC4wIKXMDSoASAFQAw%3D%3D')}
+          onPress={() => Linking.openURL('https://www.google.com/maps/place/Barquisimeto+3001,+Lara/@10.0620252,-69.4452512,22290m/data=!3m2!1e3!4b1!4m6!3m5!1s0x8e87671d783e8671:0x972fe1e11519c3db!8m2!3d10.0677719!4d-69.3473509!16zL20vMDJzM2s0?hl=es&entry=ttu&g_ep=EgoyMDI1MDMxMi4wIKXMDSoASAFQAw%3D%3D')}
         >
           <Ionicons name="location-outline" size={24} color="#fd0100" />
-          <Text style={styles.contactText}>Caracas, Venezuela</Text>
+          <Text style={styles.contactText}>Barquisimeto, Venezuela</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

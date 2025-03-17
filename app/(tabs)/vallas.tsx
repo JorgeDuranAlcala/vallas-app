@@ -89,7 +89,7 @@ export default function Vallas() {
                     <View style={styles.modalInfoItem}>
                       <Ionicons name="resize-outline" size={26} color="#eee" />
                       <Text style={styles.modalInfoLabel}>
-                        Tamaño: {selectedValla.ancho} x {selectedValla.alto}
+                        Tamaño: {selectedValla.ancho} mts x {selectedValla.alto} mts
                       </Text>
                     </View>
                   </View>
@@ -145,32 +145,38 @@ export default function Vallas() {
     >
       <Image source={{ uri: item.imagenUrl }} style={styles.adImage} />
       <LinearGradient
-      colors={['rgba(0,0,0,0)', 'rgba(0, 0, 0, 0.1)']}
-      style={styles.imageOverlay}
-    />
+        colors={['rgba(0,0,0,0)', 'rgba(0, 0, 0, 0.1)']}
+        style={styles.imageOverlay}
+      />
       <View style={styles.adInfo}>
         <View style={styles.adHeader}>
           <View>
-            <Text style={styles.adTitle}>{item.nombre}</Text>
-            <Text style={styles.adPrice}>Precio: ${item.price}</Text>
-            
-             <View style={styles.locationContainer}>
-                            <Ionicons name="location-outline" size={16} color="#007AFF" />
-                            <Text style={styles.locationText}>
-                              {item.ubicacion}
-                              {item.ciudad && `, ${item.ciudad.ciudad}`}
-                              {item.estado && `, ${item.estado.estado}`}
-                            </Text>
-                          </View>
+            {/* Title with Icon */}
+            <View style={styles.adRow}>
+              <Ionicons name="business-outline" size={24} color="#333" />
+              <Text style={styles.adTitle}>{item.nombre}</Text>
+            </View>
+  
+            {/* Price with Icon */}
+            <View style={styles.adRow}>
+              <Ionicons name="cash-outline" size={24} color="#333" />
+              <Text style={styles.adPrice}>Precio: ${item.price}</Text>
+            </View>
+  
+            {/* Location with Icon */}
+            <View style={styles.adRow}>
+              <Ionicons name="location-outline" size={24} color="#333" />
+              <Text style={styles.locationText}>
+                {item.ubicacion}
+                {item.ciudad && `, ${item.ciudad.ciudad}`}
+                {item.estado && `, ${item.estado.estado}`}
+              </Text>
+            </View>
           </View>
-          <TouchableOpacity style={styles.heartButton}>
-            <Ionicons name="heart" size={24} color="#FF5A5F" />
-          </TouchableOpacity>
         </View>
       </View>
     </TouchableOpacity>
   );
-
   async function onRefresh() {
     setRefreshing(true);
     // Aquí puedes realizar la lógica para actualizar los datos
@@ -204,7 +210,7 @@ export default function Vallas() {
         </>
       ) : (
         <View style={styles.emptyState}>
-          <Ionicons name="infinite" size={64} color="#666" />
+          <Ionicons name="sync-circle-outline" size={64} color="#666" />
           {!loading.vallas ? (
             <>
               <Text style={styles.emptyStateTitle}>No Saved Ads</Text>
@@ -255,16 +261,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
+  adRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   adTitle: {
-    fontSize: 20,
+    fontSize: 28,
   fontWeight: '700',
   color: '#333',
-  marginBottom: 8,
+  marginBottom: 3,
+  marginLeft:10,
   },
   adPrice: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#007AFF',
+    color: '#333',
+    marginLeft:10,
   },
   heartButton: {
     padding: 4,
@@ -339,6 +352,7 @@ const styles = StyleSheet.create({
     padding: 24, // Increased padding
     backgroundColor: '#fd0100',
         marginLeft: 0,
+        
 
 
   },
@@ -348,6 +362,7 @@ const styles = StyleSheet.create({
     color: '#eee',
     marginBottom: 16,
     letterSpacing: -0.5, // Tighter letter spacing
+    
   },
   modalInfoContainer: {
     flexDirection: 'column',
@@ -402,8 +417,9 @@ const styles = StyleSheet.create({
     marginTop: 5, // Optional: adds some space above the location text
   },
   locationText: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#333',
     marginLeft: 5, // Space between the icon and the text
+    fontWeight: '700',
   }
 });

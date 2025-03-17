@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView, Image, Modal, TouchableOpacity, Fla
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
-import add from '../../assets/images/add.jpeg';
+import add from '../../assets/images/add2.jpg';
 import banner from '../../assets/images/banner1.jpeg';
 import image1 from '../../assets/images/p1.jpeg';
 import image2 from '../../assets/images/p2.jpeg';
@@ -45,7 +45,7 @@ const mostSoldCartParts = [
   },
   {
     id: '2',
-    name: 'Oil Filter',
+    name: 'Gigantografia',
     price: 15.99,
     soldCount: 987,
     icon: 'filter-outline',
@@ -55,7 +55,7 @@ const mostSoldCartParts = [
   },
   {
     id: '3',
-    name: 'Battery',
+    name: 'Impulsa tu Imagen',
     price: 89.99,
     soldCount: 756,
     icon: 'battery-charging-outline',
@@ -65,7 +65,7 @@ const mostSoldCartParts = [
   },
   {
     id: '4',
-    name: 'Air Filter',
+    name: 'Logo en Corporeo',
     price: 24.99,
     soldCount: 623,
     icon: 'funnel-outline',
@@ -124,7 +124,7 @@ const renderItem = ({ item, onPress }: { item: IValla | IAviso; onPress: () => v
       {/* Conditionally render location information only for Vallas */}
       {'ubicacion' in item && (
         <View style={styles.locationContainer}>
-          <Ionicons name="location-outline" size={16} color="#007AFF" />
+          <Ionicons name="location-outline" size={16} color="#191919" />
           <Text style={styles.locationText}>{item.ubicacion}</Text>
           {/* If ciudad is also part of the Valla, render it */}
           {'ciudad' in item && item.ciudad && (
@@ -143,14 +143,7 @@ const renderMostSoldPartsGrid = (title: string, parts: any[]) => (
   <View style={styles.gridSectionContainer}>
     <View style={styles.gridSectionHeader}>
       <Text style={styles.gridSectionTitle}>{title}</Text>
-      <TouchableOpacity style={styles.seeAllButton}>
-        <Text style={styles.seeAllButtonText}>See All</Text>
-        <Ionicons 
-          name="chevron-forward-outline" 
-          size={16} 
-          color="#2563eb" 
-        />
-      </TouchableOpacity>
+      
     </View>
     <FlatList
       data={parts}
@@ -159,11 +152,7 @@ const renderMostSoldPartsGrid = (title: string, parts: any[]) => (
           style={styles.gridPartCard}
           onPress={() => {/* Navigate to part details */}}
         >
-          <View style={styles.gridPartBadge}>
-            <Text style={styles.gridPartBadgeText}>
-              {item.soldCount} Sold
-            </Text>
-          </View>
+          
           <Image 
             source={item.isLocal ? item.image : { uri: item.image }} // Handle local and remote images
             style={styles.gridPartImage} 
@@ -220,7 +209,7 @@ const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void
         )}
 
         <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-          <Text style={styles.closeButtonText}>Close</Text>
+          <Text style={styles.closeButtonText}>Cerrar</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -286,7 +275,7 @@ const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void
   <View style={styles.socialIcons}>
     <TouchableOpacity 
       style={styles.socialButton}
-      onPress={() => Linking.openURL('https://instagram.com/victorcamacaro1999')}
+      onPress={() => Linking.openURL('https://instagram.com/ideapubve')}
     >
       <Ionicons name="logo-instagram" size={24} color="#E1306C" />
     </TouchableOpacity>
@@ -298,7 +287,7 @@ const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void
     </TouchableOpacity>
     <TouchableOpacity 
       style={styles.socialButton}
-      onPress={() => Linking.openURL('https://wa.me/+584267472630')}
+      onPress={() => Linking.openURL('https://wa.me/+584127812540')}
     >
       <Ionicons name="logo-whatsapp" size={24} color="#25D366" />
     </TouchableOpacity>
@@ -322,15 +311,15 @@ const styles = StyleSheet.create({
   image: { width: '100%', height: 120 },
   cardInfo: { padding: 10 },
   title: { fontSize: 16, fontWeight: 'bold', color: '#333' },
-  price: { fontSize: 14, fontWeight: '600', color: '#007AFF' },
+  price: { fontSize: 16, fontWeight: '600', color: '#191919' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   modalContent: { backgroundColor: 'white', padding: 20, borderRadius: 12, width: '80%', alignItems: 'center' },
   modalImage: { width: '100%', height: 200, borderRadius: 10, marginBottom: 10 },
   modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', textAlign: 'center' },
-  modalPrice: { fontSize: 16, fontWeight: '600', color: '#007AFF', marginBottom: 10 },
+  modalPrice: { fontSize: 16, fontWeight: '600', color: '#191919', marginBottom: 10 },
   modalDescription: { textAlign: 'center', marginBottom: 10, color: '#666' },
  // socialIcons: { flexDirection: 'row', gap: 20, marginVertical: 10 },
-  closeButton: { backgroundColor: '#007AFF', paddingVertical: 8, paddingHorizontal: 20, borderRadius: 8, marginTop: 10 },
+  closeButton: { backgroundColor: '#fd0100', paddingVertical: 8, paddingHorizontal: 20, borderRadius: 8, marginTop: 10 },
   closeButtonText: { color: 'white', fontWeight: 'bold' },
   splashAdContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
   splashCloseButton: { position: 'absolute', top: 20, right: 20, zIndex: 1 },
@@ -390,7 +379,8 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: 14,
-    color: '#333',
+    fontWeight: '500',
+    color: '#191919',
     marginLeft: 5, // Space between the icon and the text
   },
   gridSectionContainer: {
@@ -432,21 +422,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  gridPartBadge: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: '#2563eb',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    zIndex: 1,
-  },
-  gridPartBadgeText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '600',
-  },
+ 
   gridPartImage: {
     width: '100%',
     height: 150,
@@ -468,7 +444,7 @@ const styles = StyleSheet.create({
   gridPartPrice: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#2563eb',
+    color: '#191919',
   },
   
   
