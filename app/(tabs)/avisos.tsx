@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, ScrollView, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAdvertisements } from '@/hooks/useAd';
+import { AdType, useAdvertisements } from '@/hooks/useAd';
 import { IAviso, IValla } from '.';
 import { useState } from 'react';
 import { RefreshControl } from 'react-native'
@@ -10,19 +10,21 @@ export default function Avisos() {
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
   const ITEMS_PER_PAGE = 3;
-  const { avisos, loading, fetchData } = useAdvertisements({ itemsPerPage: ITEMS_PER_PAGE });
+  const { avisos, loading, fetchData, totalPagesAvisos } = useAdvertisements({ itemsPerPage: ITEMS_PER_PAGE, type: AdType.AVISO, withCache: true });
 
-  const totalPages = Math.ceil(avisos.length / ITEMS_PER_PAGE);
-  const paginatedAvisos = avisos.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const totalPages = totalPagesAvisos
+  const paginatedAvisos = avisos;
 
   const goToNextPage = () => {
     if (page < totalPages) {
+      fetchData(page + 1)
       setPage(prev => prev + 1);
     }
   };
 
   const goToPreviousPage = () => {
     if (page > 1) {
+      fetchData(page - 1)
       setPage(prev => prev - 1);
     }
   };
@@ -198,7 +200,7 @@ export default function Avisos() {
 
   return (
     <View style={styles.container}>
-      {avisos.length > 0 ? (
+      {avisos.length > 0 && !loading.avisos ? (
         <>
         <FlatList
           data={paginatedAvisos}
@@ -363,7 +365,7 @@ const styles = StyleSheet.create({
   },
   modalImage: {
     width: '100%',
-    height: 300,
+    height: 170
   },
   modalDetails: {
     backgroundColor:'#fd0100',

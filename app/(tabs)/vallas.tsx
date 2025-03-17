@@ -4,7 +4,7 @@ import {
   ActivityIndicator, Modal, ScrollView 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAdvertisements } from '@/hooks/useAd';
+import { AdType, useAdvertisements } from '@/hooks/useAd';
 import { IValla } from '.';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RefreshControl } from 'react-native'
@@ -16,11 +16,15 @@ const ITEMS_PER_PAGE = 3;
 export default function Vallas() {
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
-  const { vallas, loading,fetchData, totalPages: vallasTotalPages } = useAdvertisements({ itemsPerPage: ITEMS_PER_PAGE });
+  const { vallas, loading,fetchData, totalPagesVallas } = useAdvertisements({ itemsPerPage: ITEMS_PER_PAGE, type: AdType.VALLA, withCache: false });
   const [selectedValla, setSelectedValla] = useState<IValla | null>(null);
   console.log('vallas', vallas)
-  const totalPages = vallasTotalPages;
+  const totalPages = totalPagesVallas;
   const paginatedVallas = vallas;
+
+  useEffect(() => {
+    fetchData(page)
+  }, []);
 
   const handleNextPage = () => {
     fetchData(page + 1)
@@ -186,7 +190,8 @@ export default function Vallas() {
 
   return (
     <View style={styles.container}>
-      {vallas.length > 0 ? (
+
+      {vallas.length > 0 && !loading.vallas ? (
         <>
           <FlatList
             data={paginatedVallas}
@@ -206,7 +211,7 @@ export default function Vallas() {
       ) : (
         <View style={styles.emptyState}>
           <Ionicons name="sync-circle-outline" size={64} color="#666" />
-          {!loading ? (
+          {!loading.vallas ? (
             <>
               <Text style={styles.emptyStateTitle}>No Saved Ads</Text>
               <Text style={styles.emptyStateText}>
@@ -340,7 +345,7 @@ const styles = StyleSheet.create({
   },
   modalImage: {
     width: '100%',
-    height: 350, // Increased height
+    height: 170, // Increased height
     resizeMode: 'cover',
   },
   modalDetails: {
