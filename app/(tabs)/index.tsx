@@ -8,6 +8,9 @@ import image1 from '../../assets/images/p1.jpeg';
 import image2 from '../../assets/images/p2.jpeg';
 import image3 from '../../assets/images/p3.jpeg';
 import image4 from '../../assets/images/p4.jpeg';  
+import MapScreen from './mapContainer';
+import React = require('react');
+
 
 export interface IValla {
   id: number;
@@ -275,6 +278,9 @@ const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void
   </View>
 
 </View>
+
+<MapScreen/>
+
     </ScrollView>
 
     

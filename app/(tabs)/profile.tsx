@@ -39,7 +39,9 @@ export default function Profile() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Contacto</Text>
+        <Text style={styles.sectionTitle}>Contacimport { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Linking } from 'react-native';
+
+</Text>
         <TouchableOpacity 
           style={styles.contactItem}
           onPress={() => Linking.openURL('tel:+584127812540')}
