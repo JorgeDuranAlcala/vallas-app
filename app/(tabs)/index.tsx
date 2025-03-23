@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Image, Modal, TouchableOpacity, FlatList, ActivityIndicator, Linking, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Modal, TouchableOpacity, FlatList, ActivityIndicator, Linking, Dimensions, RefreshControl } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
@@ -79,13 +79,15 @@ const mostSoldCartParts = [
 
 
 export default function Browse() {
-  const [vallas, setVallas] = useState<IValla[]>([]);
-  const [avisos, setAvisos] = useState<IAviso[]>([]);
-  const [loading, setLoading] = useState({ vallas: false, avisos: false });
+  //const [vallas, setVallas] = useState<IValla[]>([]);
+  //const [avisos, setAvisos] = useState<IAviso[]>([]);
+  //const [loading, setLoading] = useState({ vallas: false, avisos: false });
   const [selectedValla, setSelectedValla] = useState<IValla | null>(null);
   const [selectedAviso, setSelectedAviso] = useState<IAviso | null>(null);
   const [showSplashAd, setShowSplashAd] = useState(true);
-
+  const [refreshing, setRefreshing] = useState(false);
+  const { vallas, avisos, loading, fetchData } = useAdvertisements({ itemsPerPage: 3, type: AdType.BOTH, withCache: true });
+/* 
   useEffect(() => {
     (async () => {
       setLoading({ vallas: true, avisos: true });
@@ -104,7 +106,13 @@ export default function Browse() {
         setLoading({ vallas: false, avisos: false });
       }
     })();
-  }, []);
+  }, []); */
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  };
 
   // Inside your Browse component
 const navigation = useNavigation();
@@ -210,7 +218,17 @@ const renderDetailsModal = (item: IValla | IAviso | null, closeModal: () => void
   </Modal>
 );
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView 
+    
+       style={styles.container}
+       refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+       }
+    
+    >
       {showSplashAd && (
         <Modal visible={showSplashAd} transparent={true} onRequestClose={() => setShowSplashAd(false)}>
           <View style={styles.splashAdContainer}>

@@ -1,12 +1,22 @@
 import { IAviso, IValla } from '@/app/(tabs)';
 import { useState, useEffect } from 'react';
 
+export enum AdType {
+  VALLA = 'valla',
+  AVISO = 'aviso',
+  BOTH = 'both'
+}
+
 type useAdvertisementsProps = {
   itemsPerPage?: number;
+  type?: AdType;
+  withCache?: boolean;
 }
 
 export const useAdvertisements = ({
-  itemsPerPage = 10
+  itemsPerPage = 10,
+  type,
+  withCache = true
 }: useAdvertisementsProps) => {
   const [vallas, setVallas] = useState<IValla[]>([]);
   const [avisos, setAvisos] = useState<IAviso[]>([]);
@@ -14,30 +24,47 @@ export const useAdvertisements = ({
     vallas: false,
     avisos: false
   });
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPagesAvisos, setTotalPagesAvisos] = useState(0);
+  const [totalPagesVallas, setTotalPagesVallas] = useState(0);
 
-  const fetchData = async (page: number = 1, limit?: number) => {
-    setLoading(prev => ({ ...prev, vallas: true }));
+
+  async function getVallas(page: number, limit: number) {
     try {
-      const vallasResponse = await fetch(`https://vallas-publicitaria.onrender.com/vallas?page=${page}&limit=${limit ? limit : itemsPerPage}`);
+      setLoading(prev => ({ ...prev, vallas: true }));
+      const vallasResponse = await fetch(`https://vallas-publicitaria.onrender.com/vallas?page=${page}&limit=${limit ? limit : itemsPerPage}&cache=${withCache}`);
       const vallasData = await vallasResponse.json();
       setVallas(vallasData.items);
-      setTotalPages(vallasData.total);
+      setTotalPagesVallas(vallasData.totalPages);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(prev => ({ ...prev, vallas: false }));
     }
 
-    setLoading(prev => ({ ...prev, avisos: true }));
+  }
+
+  async function getAvisos(page: number, limit: number) {
     try {
-      const avisosResponse = await fetch(`https://vallas-publicitaria.onrender.com/avisos?page=${page}&limit=${limit ? limit : itemsPerPage}&cache=false`);
+      setLoading(prev => ({ ...prev, avisos: true }));
+      const avisosResponse = await fetch(`https://vallas-publicitaria.onrender.com/avisos?page=${page}&limit=${limit ? limit : itemsPerPage}&cache=${withCache}`);
       const avisosData = await avisosResponse.json();
       setAvisos(avisosData.items);
+      setTotalPagesAvisos(avisosData.totalPages);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(prev => ({ ...prev, avisos: false }));
+    }
+  }
+
+  const fetchData = async (page: number = 1) => {
+    if (type === AdType.VALLA) {
+      getVallas(page, itemsPerPage);
+    } else if (type === AdType.AVISO) {
+      getAvisos(page, itemsPerPage);
+    } else {
+      getVallas(page, itemsPerPage);
+      getAvisos(page, itemsPerPage);
     }
   };
 
@@ -45,5 +72,5 @@ export const useAdvertisements = ({
     fetchData();
   }, []);
 
-  return { vallas, avisos, loading, fetchData, totalPages };
+  return { vallas, avisos, loading, fetchData, totalPagesAvisos, totalPagesVallas };
 };
